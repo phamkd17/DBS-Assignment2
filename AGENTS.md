@@ -16,7 +16,7 @@ The site is a **personal culinary showcase** for dinner parties:
 ### Culinary philosophy (guides all copy and UX)
 The host provides an exceptional platform; **the guest is the final chef**. Guests are the masters of their own palate, and they build their own perfect meal from what's on offer.
 - **Tone:** warm, casual, and guest-centered. Never pretentious: no tasting-menu or fine-dining language ("seven courses," "served in order," French/Italian course names like *Primi*), and no telling guests how to eat.
-- **Voice:** speak to the guest ("you pick," "your plate"). The host's role is to set things up and cook ("I'll cook it").
+- **Voice:** speak to the guest ("you pick," "your plate"). The host's role is to set the table, provide the base, and share the know-how ("I'll show you why it works").
 - **UX:** choice and control come first. Selecting, combining, and building a meal is the main interaction, not passively browsing a fixed menu.
 
 ### How the events work (the site should model this)
@@ -24,13 +24,17 @@ Each event has a **theme**, and it's a potluck of ingredients, not of finished d
 1. **The host picks a theme and provides the base.** Example: *Pizza night*. The host supplies the dough and sauce.
 2. **Each guest brings ingredients.** Example: 3 toppings per guest.
 3. **Everything goes into a shared pool.** At the event, anyone can mix and match from everything everyone brought.
-4. **Each guest builds their own creation** from the base and the pool. Every plate is different.
+4. **The host teaches the food science.** Before anyone builds, the host explains *why* a dish works, so guests understand the principles rather than following a recipe. Pizza examples: why a hot oven and stone give a blistered crust, how moisture from fresh mozzarella or mushrooms makes a soggy center, balancing fat, acid, salt, and heat (hot honey on salty cured meat), and which toppings go on before the bake versus after (basil, arugula, burrata).
+5. **Each guest builds their own creation** from the base and the pool, using what they just learned. Every plate is different.
+
+The arc of every event is **learn → build**: the host shares knowledge, and the guest turns it into their own masterpiece. The host is a teacher and host, not a chef cooking to order.
 
 What this means for the site:
-- **Content model:** an *event* has a theme, a date, a host-provided base, a per-guest ingredient count, and the guests' contributed ingredients. Past events in the archive show the theme and what people made.
-- **Main interactions** (all faked in the browser): (a) a guest **claims the ingredients they'll bring** (up to the limit, e.g. 3) and sees the shared pool grow; (b) a guest **builds their creation** from the base and the pool.
-- **Language:** "bring," "pool," "build," "your creation." The host's role is "I'll provide the dough and sauce," never "I'll cook your order."
-- The Line & Stone design system already follows this model (`lib/events.ts`: claim up to 3 → pool → build). New design systems should use the same components and data.
+- **Content model:** an *event* has a theme, a date, a host-provided base, a per-guest ingredient count, the guests' contributed ingredients, and **food-science lessons** (short principles, each with a takeaway for building, e.g. "Wet toppings: pre-roast mushrooms so they don't flood the crust"). Past events in the archive show the theme, what was taught, and what people made.
+- **Main interactions** (all faked in the browser): (a) a guest **claims the ingredients they'll bring** (up to the limit, e.g. 3) and sees the shared pool grow; (b) a guest **learns the principles** for tonight's theme; (c) a guest **builds their creation** from the base and the pool. Where it helps, connect the lesson to the build: tips beside relevant ingredients ("goes on after the bake," "very wet: use sparingly") or a light check on balance (salty, sweet, acid, heat).
+- **Tone for lessons:** curious and generous, like a friend explaining something cool in the kitchen. Plain words, one idea at a time, no lecturing, and never tell a guest their creation is wrong. Knowledge is a tool the guest is free to use or ignore.
+- **Language:** "bring," "pool," "learn," "build," "your creation." The host's role is "I'll provide the dough and sauce, and show you why it works," never "I'll cook your order."
+- The Line & Stone design system follows the claim → pool → build model (`lib/events.ts`). It doesn't have a **lessons** component yet. Add one (e.g. a "Why it works" card or a step list) when building the next design system or the site.
 
 ## How we work (important)
 
