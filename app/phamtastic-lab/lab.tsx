@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { categories, pastNights, tastes, type Creation, type PastNight } from "@/lib/events";
+import { categories, pastNights, tastes, type Category, type Creation, type PastNight } from "@/lib/events";
 import { balanceNote, usePotluck } from "@/lib/use-potluck";
-import { chip, label, link, primary, secondary, tab } from "@/components/line-and-stone/styles";
+import { chip, input, label, link, primary, secondary, tab } from "@/components/line-and-stone/styles";
 import { Badge, HowItWorks, Lessons, Meter, Toggle } from "@/components/line-and-stone/ui";
 
 // [label, short label for phones, anchor]
@@ -83,6 +83,17 @@ const sectionIds = nav.map(([, , href]) => href.slice(1));
 export default function Lab() {
   const p = usePotluck();
   const active = useActiveSection(sectionIds);
+  const [ownName, setOwnName] = useState("");
+  const [ownCategory, setOwnCategory] = useState<Category>("Veg");
+  const [ownError, setOwnError] = useState<string | null>(null);
+  const [ownAdded, setOwnAdded] = useState<string | null>(null);
+  const submitOwn = (e: React.FormEvent) => {
+    e.preventDefault();
+    const err = p.addCustom(ownName, ownCategory);
+    setOwnError(err);
+    setOwnAdded(err ? null : ownName.trim());
+    if (!err) setOwnName("");
+  };
   const howRef = useRef<HTMLDialogElement>(null);
   const detailRef = useRef<HTMLDialogElement>(null);
   const [saved, setSaved] = useState(false);
@@ -207,6 +218,63 @@ export default function Lab() {
               </ul>
               {p.full && <p className="mt-3 text-sm text-ls-muted">That&rsquo;s your three. Remove one to swap it out.</p>}
 
+              <form onSubmit={submitOwn} className="mt-8 border border-ls-border bg-ls-surface p-5" noValidate>
+                <p className="font-ls-serif text-2xl">Bringing something else?</p>
+                <p className="mt-1 text-sm text-ls-muted">Add your own ingredient. It counts toward your three and goes straight into the pool.</p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_11rem_auto] sm:items-end">
+                  <div>
+                    <label htmlFor="own-name" className={`${label} mb-2 block`}>
+                      Ingredient
+                    </label>
+                    <input
+                      id="own-name"
+                      value={ownName}
+                      onChange={(e) => {
+                        setOwnName(e.target.value);
+                        setOwnError(null);
+                        setOwnAdded(null);
+                      }}
+                      placeholder="e.g. Caramelized onions"
+                      maxLength={40}
+                      autoComplete="off"
+                      disabled={p.full}
+                      aria-invalid={ownError ? true : undefined}
+                      aria-describedby="own-help"
+                      className={input.live}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="own-category" className={`${label} mb-2 block`}>
+                      Category
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="own-category"
+                        value={ownCategory}
+                        onChange={(e) => setOwnCategory(e.target.value as Category)}
+                        disabled={p.full}
+                        className={`${input.live} cursor-pointer appearance-none pr-9 disabled:cursor-not-allowed`}
+                      >
+                        {categories.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                      <span aria-hidden className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs">
+                        ▾
+                      </span>
+                    </div>
+                  </div>
+                  <button type="submit" disabled={p.full} className={`${secondary.live} h-11`}>
+                    + Add
+                  </button>
+                </div>
+                <p id="own-help" aria-live="polite" className={`mt-2 min-h-5 text-sm ${ownError ? "text-ls-error" : ownAdded ? "text-ls-success" : "text-ls-muted"}`}>
+                  {ownError ?? (ownAdded ? `✓ Added ${ownAdded} to what you're bringing.` : p.full ? "You've got your three. Remove one to add your own." : "")}
+                </p>
+              </form>
+
               <div className="mt-8">
                 <p className={`${label} mb-3 text-ls-muted`}>Already in the pool</p>
                 <ul className="flex flex-wrap gap-2">
@@ -298,10 +366,21 @@ export default function Lab() {
                 <Toggle checked={p.showNames} onChange={p.setShowNames} labelText="Show who brought what" />
               </div>
 
-              <p className="flex flex-wrap items-center gap-2 border-y border-dashed border-ls-border py-3 text-[15px]">
-                <Badge tone="solid">On every pizza</Badge>
-                {p.event.base.join(" & ")}
-              </p>
+              <div className="space-y-2">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge tone="solid">I&rsquo;ll provide</Badge>
+                      <span className="opacity-80">Use it, swap it, or skip it.</span>
+                    </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Provided by the host">
+                      {p.event.base.map((b) => (
+                        <li key={b}>
+                          <button type="button" aria-pressed={p.baseOn.includes(b)} onClick={() => p.toggleBase(b)} className={`${chip.live} min-h-11 text-[15px]`}>
+                            {b}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
               <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
                 {p.visiblePool.map((i) => (
                   <li key={i.id}>
@@ -348,7 +427,7 @@ export default function Lab() {
               <dl className="space-y-3 px-5 py-4">
                 <div>
                   <dt className="text-sm text-ls-muted">Into the oven</dt>
-                  <dd className="font-ls-serif text-2xl leading-snug">{p.intoOven.join(", ")}</dd>
+                  <dd className="font-ls-serif text-2xl leading-snug">{p.intoOven.length ? p.intoOven.join(", ") : "Nothing yet"}</dd>
                 </div>
                 <div>
                   <dt className="text-sm text-ls-muted">After the bake</dt>

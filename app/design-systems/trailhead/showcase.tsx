@@ -594,10 +594,21 @@ export default function Showcase() {
                   </div>
                   <Toggle checked={p.showNames} onChange={p.setShowNames} labelText="Show who brought what" />
 
-                  <p className="flex flex-wrap items-center gap-2 rounded-2xl border-2 border-dashed border-th-ink bg-th-bg px-4 py-3">
-                    <Badge tone="ink">On every pizza</Badge>
-                    <span className="font-semibold">{p.event.base.join(" + ")}</span>
-                  </p>
+                  <div className="space-y-2">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge tone="ink">I&rsquo;ll provide</Badge>
+                      <span className="opacity-80">Use it, swap it, or skip it.</span>
+                    </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Provided by the host">
+                      {p.event.base.map((b) => (
+                        <li key={b}>
+                          <button type="button" aria-pressed={p.baseOn.includes(b)} onClick={() => p.toggleBase(b)} className={chip.live}>
+                            {b}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                   <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
                     {p.visiblePool.map((i) => (
                       <li key={i.id}>
@@ -632,7 +643,7 @@ export default function Showcase() {
                   <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border-2 border-th-ink bg-th-surface p-4">
                       <p className="text-sm font-semibold text-th-canyon">🔥 Into the oven</p>
-                      <p className="mt-1 font-th-display text-lg font-bold leading-snug">{p.intoOven.join(", ")}</p>
+                      <p className="mt-1 font-th-display text-lg font-bold leading-snug">{p.intoOven.length ? p.intoOven.join(", ") : "Nothing yet"}</p>
                     </div>
                     <div className="rounded-2xl border-2 border-th-ink bg-th-surface p-4">
                       <p className="text-sm font-semibold text-th-link">🌿 After the bake</p>

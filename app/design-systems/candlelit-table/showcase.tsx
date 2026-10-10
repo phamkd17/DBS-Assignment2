@@ -529,10 +529,21 @@ export default function Showcase() {
                   </div>
                   <Toggle checked={p.showNames} onChange={p.setShowNames} labelText="Show who brought what" />
 
-                  <p className="flex flex-wrap items-center gap-2 rounded-[10px] border border-dashed border-ct-border px-4 py-3 text-[15px]">
-                    <Badge tone="cream">On every pizza</Badge>
-                    {p.event.base.join(" & ")}
-                  </p>
+                  <div className="space-y-2">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge tone="cream">I&rsquo;ll provide</Badge>
+                      <span className="opacity-80">Use it, swap it, or skip it.</span>
+                    </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Provided by the host">
+                      {p.event.base.map((b) => (
+                        <li key={b}>
+                          <button type="button" aria-pressed={p.baseOn.includes(b)} onClick={() => p.toggleBase(b)} className={chip.live}>
+                            {b}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                   <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
                     {p.visiblePool.map((i) => (
                       <li key={i.id}>
@@ -566,7 +577,7 @@ export default function Showcase() {
                   <dl className="mt-3 space-y-3">
                     <div>
                       <dt className="text-sm text-ct-muted">Into the oven</dt>
-                      <dd className="font-ct-serif text-xl italic leading-snug">{p.intoOven.join(", ")}</dd>
+                      <dd className="font-ct-serif text-xl italic leading-snug">{p.intoOven.length ? p.intoOven.join(", ") : "Nothing yet"}</dd>
                     </div>
                     <div>
                       <dt className="text-sm text-ct-muted">After the bake</dt>

@@ -60,7 +60,7 @@ function Caption({ children }: { children: ReactNode }) {
 export default function Showcase() {
   const {
     bringing, full, mine, pool, visiblePool, confirmed, confirm, toggleBring, ideaTab, setIdeaTab, poolFilter, setPoolFilter,
-    creation, toggleCreation, showNames, setShowNames, vegOnly, setVegOnly, noNuts, setNoNuts, crust, setCrust,
+    creation, toggleCreation, baseOn, toggleBase, showNames, setShowNames, vegOnly, setVegOnly, noNuts, setNoNuts, crust, setCrust,
     intoOven, afterBake, tasteCount,
   } = usePotluck();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -411,10 +411,21 @@ export default function Showcase() {
                     </div>
                     <Toggle checked={showNames} onChange={setShowNames} labelText="Show who brought what" />
 
-                    <p className="flex flex-wrap items-center gap-2 border-y border-dashed border-ls-border py-3 text-[15px]">
-                      <Badge tone="solid">On every pizza</Badge>
-                      {event.base.join(" & ")}
+                    <div className="space-y-2">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge tone="solid">I&rsquo;ll provide</Badge>
+                      <span className="opacity-80">Use it, swap it, or skip it.</span>
                     </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Provided by the host">
+                      {event.base.map((b) => (
+                        <li key={b}>
+                          <button type="button" aria-pressed={baseOn.includes(b)} onClick={() => toggleBase(b)} className={chip.live}>
+                            {b}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                     <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
                       {visiblePool.map((i) => (
                         <li key={i.id}>
@@ -447,7 +458,7 @@ export default function Showcase() {
                     <dl className="mt-3 space-y-3">
                       <div>
                         <dt className="text-sm text-ls-muted">Into the oven</dt>
-                        <dd className="font-ls-serif text-2xl leading-snug">{intoOven.join(", ")}</dd>
+                        <dd className="font-ls-serif text-2xl leading-snug">{intoOven.length ? intoOven.join(", ") : "Nothing yet"}</dd>
                       </div>
                       <div>
                         <dt className="text-sm text-ls-muted">After the bake</dt>

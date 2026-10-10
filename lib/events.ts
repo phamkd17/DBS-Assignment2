@@ -34,7 +34,7 @@ export type CulinaryEvent = {
   date: string;
   time: string;
   base: string[]; // what the host provides
-  baseTastes: Taste[]; // what the base already contributes (tomato sauce: acid, sweet)
+  baseTastes: Record<string, Taste[]>; // what each base item contributes when a guest uses it
   perGuest: number; // ingredients each guest brings
   guests: string[];
   pool: Ingredient[]; // already claimed by other guests
@@ -63,7 +63,7 @@ export const pizzaNight: CulinaryEvent = {
   date: "Saturday, October 18",
   time: "7 pm",
   base: ["Hand-stretched dough", "Tomato sauce"],
-  baseTastes: ["Acid", "Sweet"],
+  baseTastes: { "Tomato sauce": ["Acid", "Sweet"] },
   perGuest: 3,
   guests: ["Maya", "Jordan", "Sam", "Priya", "Leo", "You"],
   pool: [
