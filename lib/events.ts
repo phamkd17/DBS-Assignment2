@@ -5,8 +5,8 @@
 export type Category = "Cheese" | "Veg" | "Meat & fish" | "Finish";
 export const categories: Category[] = ["Cheese", "Veg", "Meat & fish", "Finish"];
 
-export type Taste = "Salty" | "Sweet" | "Acid" | "Heat" | "Rich";
-export const tastes: Taste[] = ["Salty", "Sweet", "Acid", "Heat", "Rich"];
+export type Taste = "Salty" | "Sweet" | "Sour" | "Heat" | "Umami";
+export const tastes: Taste[] = ["Salty", "Sweet", "Sour", "Heat", "Umami"];
 
 export type Ingredient = {
   id: string;
@@ -63,32 +63,32 @@ export const pizzaNight: CulinaryEvent = {
   date: "Saturday, October 18",
   time: "7 pm",
   base: ["Hand-stretched dough", "Tomato sauce"],
-  baseTastes: { "Tomato sauce": ["Acid", "Sweet"] },
+  baseTastes: { "Tomato sauce": ["Sour", "Sweet", "Umami"] },
   perGuest: 3,
   guests: ["Maya", "Jordan", "Sam", "Priya", "Leo", "You"],
   pool: [
-    veg("mozzarella", "Fresh mozzarella", "Cheese", { tastes: ["Rich"], broughtBy: "Maya" }),
+    veg("mozzarella", "Fresh mozzarella", "Cheese", { broughtBy: "Maya" }),
     veg("basil", "Basil", "Finish", { after: true, broughtBy: "Maya" }),
-    meat("prosciutto", "Prosciutto", { tastes: ["Salty", "Rich"], after: true, broughtBy: "Maya" }),
-    veg("mushrooms", "Roasted mushrooms", "Veg", { tastes: ["Rich"], broughtBy: "Jordan" }),
+    meat("prosciutto", "Prosciutto", { tastes: ["Salty", "Umami"], after: true, broughtBy: "Maya" }),
+    veg("mushrooms", "Roasted mushrooms", "Veg", { tastes: ["Umami"], broughtBy: "Jordan" }),
     veg("hot-honey", "Hot honey", "Finish", { tastes: ["Sweet", "Heat"], after: true, broughtBy: "Jordan" }),
-    veg("pecorino", "Pecorino", "Cheese", { tastes: ["Salty"], broughtBy: "Jordan" }),
+    veg("pecorino", "Pecorino", "Cheese", { tastes: ["Salty", "Umami"], broughtBy: "Jordan" }),
     veg("red-onion", "Red onion", "Veg", { tastes: ["Sweet"], broughtBy: "Sam" }),
-    veg("olives", "Castelvetrano olives", "Veg", { tastes: ["Salty", "Acid"], broughtBy: "Sam" }),
+    veg("olives", "Castelvetrano olives", "Veg", { tastes: ["Salty", "Sour"], broughtBy: "Sam" }),
   ],
   ideas: [
-    veg("burrata", "Burrata", "Cheese", { tastes: ["Rich"], after: true }),
-    veg("ricotta", "Ricotta", "Cheese", { tastes: ["Rich"] }),
-    veg("gorgonzola", "Gorgonzola", "Cheese", { tastes: ["Salty", "Rich"] }),
+    veg("burrata", "Burrata", "Cheese", { after: true }),
+    veg("ricotta", "Ricotta", "Cheese"),
+    veg("gorgonzola", "Gorgonzola", "Cheese", { tastes: ["Salty", "Umami"] }),
     veg("arugula", "Arugula", "Veg", { tastes: ["Heat"], after: true }),
     veg("peppers", "Roasted peppers", "Veg", { tastes: ["Sweet"] }),
     veg("figs", "Fresh figs", "Veg", { tastes: ["Sweet"] }),
-    meat("soppressata", "Spicy soppressata", { tastes: ["Salty", "Heat", "Rich"] }),
-    meat("anchovies", "Anchovies", { tastes: ["Salty"] }),
-    meat("sausage", "Fennel sausage", { tastes: ["Salty", "Rich"] }),
-    veg("pesto", "Pistachio pesto", "Finish", { nuts: true, tastes: ["Rich"], after: true }),
+    meat("soppressata", "Spicy soppressata", { tastes: ["Salty", "Heat", "Umami"] }),
+    meat("anchovies", "Anchovies", { tastes: ["Salty", "Umami"] }),
+    meat("sausage", "Fennel sausage", { tastes: ["Salty", "Umami"] }),
+    veg("pesto", "Pistachio pesto", "Finish", { nuts: true, tastes: ["Umami"], after: true }),
     veg("chili", "Chili flakes", "Finish", { tastes: ["Heat"] }),
-    veg("garlic-oil", "Garlic oil", "Finish", { tastes: ["Rich"] }),
+    veg("garlic-oil", "Garlic oil", "Finish"),
   ],
   lessons: [
     {
@@ -109,11 +109,11 @@ export const pizzaNight: CulinaryEvent = {
     },
     {
       id: "balance",
-      title: "Balance salt, fat, acid, and heat",
+      title: "Balance salty, sweet, sour, heat, and umami",
       principle:
-        "Rich cheese tastes better next to something salty, something sharp, and a little heat. Sweet ingredients need a counterweight, or every bite tastes the same.",
-      takeaway: "Try hot honey with salty prosciutto or pecorino. Olives bring both salt and acid.",
-      related: ["hot-honey", "prosciutto", "pecorino", "olives"],
+        "Every bite tastes better with contrast: something salty, something sour, a little heat, and savory umami for depth. Sweet ingredients need a counterweight, or every bite tastes the same.",
+      takeaway: "Try hot honey with salty prosciutto or pecorino. Olives bring salt and sour, and mushrooms bring umami.",
+      related: ["hot-honey", "prosciutto", "pecorino", "olives", "mushrooms"],
     },
     {
       id: "after",

@@ -43,9 +43,9 @@ const meterColors = ["bg-th-canyon", "bg-th-accent", "bg-th-selected"];
 const tasteColors: Record<string, string> = {
   Salty: "bg-th-sky",
   Sweet: "bg-th-accent",
-  Acid: "bg-th-selected",
+  Sour: "bg-th-selected",
   Heat: "bg-th-canyon",
-  Rich: "bg-th-lagoon",
+  Umami: "bg-th-lagoon",
 };
 
 function Section({ n, title, color, children, id }: { n: string; title: string; color: string; children: ReactNode; id?: string }) {

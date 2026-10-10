@@ -21,7 +21,8 @@ export const ingredientName = (id: string) => allIngredients.find((i) => i.id ==
 export function balanceNote(count: Record<Taste, number>) {
   if (count.Salty === 0) return "Nothing salty yet. A salty cheese, olives, or cured meat would wake it up.";
   if (count.Sweet >= 2 && count.Heat === 0) return "Sweet with no heat. A little spice would play against it.";
-  if (count.Rich >= 3 && count.Acid + count.Heat <= 1) return "That's a rich one. Something sharp or spicy keeps every bite interesting.";
+  if (count.Umami >= 3 && count.Sour + count.Heat <= 1) return "Lots of umami. Something sour or spicy keeps every bite interesting.";
+  if (count.Umami === 0) return "No umami yet. Mushrooms, aged cheese, or cured meat would add savory depth.";
   return "Nicely balanced. It's yours, so trust your palate.";
 }
 
