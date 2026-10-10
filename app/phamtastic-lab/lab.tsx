@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { categories, pastNights, tastes, type Creation, type PastNight } from "@/lib/events";
 import { balanceNote, usePotluck } from "@/lib/use-potluck";
 import { chip, label, link, primary, secondary, tab } from "@/components/line-and-stone/styles";
@@ -51,8 +51,38 @@ function Arcade({ count = 12, className = "" }: { count?: number; className?: st
   );
 }
 
+/** Which section is under the sticky header right now (scroll spy for the nav). */
+function useActiveSection(ids: string[]) {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    const update = () => {
+      // A section is active once its top passes a line just below the header.
+      const line = 120;
+      let current: string | null = null;
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = id;
+      }
+      // At the very bottom of the page, the last section wins even if it's short.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = ids[ids.length - 1];
+      setActive(current);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [ids]);
+  return active;
+}
+
+const sectionIds = nav.map(([, , href]) => href.slice(1));
+
 export default function Lab() {
   const p = usePotluck();
+  const active = useActiveSection(sectionIds);
   const howRef = useRef<HTMLDialogElement>(null);
   const detailRef = useRef<HTMLDialogElement>(null);
   const [saved, setSaved] = useState(false);
@@ -72,7 +102,12 @@ export default function Lab() {
           </a>
           <nav aria-label="Sections" className="flex gap-3.5 sm:gap-7">
             {nav.map(([name, short, href]) => (
-              <a key={href} href={href} className={`${label} shrink-0 py-2 text-ls-muted underline-offset-8 transition-colors hover:text-ls-ink hover:underline focus-visible:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink`}>
+              <a
+                key={href}
+                href={href}
+                aria-current={active === href.slice(1) ? "location" : undefined}
+                className={`${label} shrink-0 py-2 text-ls-muted decoration-1 underline-offset-8 transition-colors hover:text-ls-ink hover:underline focus-visible:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink aria-[current=location]:text-ls-ink aria-[current=location]:underline aria-[current=location]:decoration-2`}
+              >
                 <span className="sm:hidden">{short}</span>
                 <span className="hidden sm:inline">{name}</span>
               </a>
