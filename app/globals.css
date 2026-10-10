@@ -107,3 +107,89 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ls-progress { animation: none; transform: none; width: 100%; opacity: 0.4; }
 }
+
+/* ── Trailhead design tokens ────────────────────────────────── */
+@theme {
+  --color-th-bg: #f7f5ee; /* Cloud */
+  --color-th-surface: #ffffff;
+  --color-th-ink: #12181b; /* Basalt: text, 2px outlines, hard shadows */
+  --color-th-muted: #4a5357;
+  --color-th-divider: #e3dfd3; /* decorative only */
+  --color-th-accent: #f6b336; /* Sunrise: primary action only, with Basalt text */
+  --color-th-accent-hover: #f8c160;
+  --color-th-accent-pressed: #e9a21f;
+  --color-th-selected: #c6e264; /* Anemone: selected chips, tabs, toggles */
+  --color-th-lagoon: #0b7f8a;
+  --color-th-link: #086a73; /* deep Lagoon: links, focus ring */
+  --color-th-fern: #2f7d32;
+  --color-th-canyon: #d9532b; /* decorative fills */
+  --color-th-sky: #2e7cd6;
+  --color-th-error: #b8401c; /* deep Canyon */
+  --color-th-success: #2f7d32; /* Fern */
+  --color-th-disabled: #e8e5dc;
+  --shadow-th: 4px 4px 0 0 #12181b;
+  --shadow-th-sm: 2px 2px 0 0 #12181b;
+  --shadow-th-lg: 6px 6px 0 0 #12181b;
+}
+
+@theme inline {
+  --font-th-display: var(--font-bricolage);
+  --font-th-sans: var(--font-instrument-sans);
+}
+
+.th-check,
+.th-radio {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  border: 2px solid var(--color-th-ink);
+  border-radius: 7px;
+  background: var(--color-th-surface);
+  cursor: pointer;
+  transition: background-color 120ms;
+}
+.th-radio {
+  border-radius: 9999px;
+}
+.th-check::before {
+  content: "";
+  width: 0.75rem;
+  height: 0.75rem;
+  transform: scale(0);
+  background: var(--color-th-ink);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.th-radio::before {
+  content: "";
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  transform: scale(0);
+  background: var(--color-th-ink);
+}
+.th-check:checked,
+.th-radio:checked {
+  background: var(--color-th-selected);
+}
+.th-check:checked::before,
+.th-radio:checked::before {
+  transform: scale(1);
+}
+.th-check:hover:not(:checked):not(:disabled),
+.th-radio:hover:not(:checked):not(:disabled) {
+  background: color-mix(in srgb, var(--color-th-selected) 35%, white);
+}
+.th-check:focus-visible,
+.th-radio:focus-visible {
+  outline: 3px solid var(--color-th-link);
+  outline-offset: 2px;
+}
+.th-check:disabled,
+.th-radio:disabled {
+  border-color: #a7a49b;
+  background: var(--color-th-disabled);
+  cursor: not-allowed;
+}

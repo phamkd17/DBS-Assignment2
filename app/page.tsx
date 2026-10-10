@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { lineAndStone, moodBoards } from "@/lib/mood-boards";
-import { instrumentSerif } from "@/lib/fonts";
+import { lineAndStone, moodBoards, trailhead } from "@/lib/mood-boards";
+import { bricolage, instrumentSerif } from "@/lib/fonts";
 
 // Add each design system here once it is built.
-const designSystems = [lineAndStone];
+const designSystems = [trailhead, lineAndStone];
+const sampleFont: Record<string, string> = {
+  trailhead: `${bricolage.className} font-extrabold`,
+  "line-and-stone": instrumentSerif.className,
+};
 
 export default function Hub() {
   return (
@@ -50,7 +54,7 @@ export default function Hub() {
                 className="flex items-center justify-between gap-3 rounded-xl border border-neutral-300 p-4 transition-colors hover:border-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 active:bg-neutral-100"
               >
                 <span className="flex items-center gap-2">
-                  <span className={`${instrumentSerif.className} text-3xl leading-none`}>Aa</span>
+                  <span className={`${sampleFont[board.slug]} text-3xl leading-none`}>Aa</span>
                   <span className="flex">
                     {board.palette.slice(3, 7).map((s) => (
                       <span key={s.hex} className="h-6 w-3" style={{ background: s.hex }} />

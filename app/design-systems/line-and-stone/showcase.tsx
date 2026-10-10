@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { contrast } from "@/lib/contrast";
-import { categories, pastCreation, pizzaNight as event, tastes, type Category, type Ingredient, type Taste } from "@/lib/events";
+import { categories, pastCreation, pizzaNight as event, tastes } from "@/lib/events";
+import { balanceNote, howItWorks as steps, ingredientName, useLessons, usePotluck } from "@/lib/use-potluck";
 import {
   chip,
   controlStates,
@@ -39,14 +40,6 @@ const typeRoles = [
 ];
 
 const spacing = [4, 8, 12, 16, 24, 32, 48, 64];
-const steps = [
-  ["I pick a theme.", "Tonight it’s pizza, so I make the dough and tomato sauce."],
-  ["You bring three ingredients.", "Claim them here so we don’t double up."],
-  ["It all goes in the pool.", "Everyone can use anything anyone brought."],
-  ["I show you why it works.", "A few bits of food science, so you know what makes a pizza great."],
-  ["You build your creation.", "Mix and match. No two plates come out the same."],
-];
-
 function Section({ n, title, id, children }: { n: string; title: string; id?: string; children: ReactNode }) {
   return (
     <section id={id} className="border-t border-ls-ink pt-6 pb-14">
@@ -143,19 +136,9 @@ function HowItWorks({ onClose }: { onClose?: () => void }) {
   );
 }
 
-const allIngredients = [...event.pool, ...event.ideas];
-const ingredientName = (id: string) => allIngredients.find((i) => i.id === id)?.name ?? id;
-
 /** Food-science lessons: pick a principle, read why it works, and see which ingredients it applies to. */
 function Lessons({ poolIds }: { poolIds: string[] }) {
-  const [current, setCurrent] = useState(0);
-  const [seen, setSeen] = useState<string[]>([event.lessons[0].id]);
-  const go = (i: number) => {
-    setCurrent(i);
-    setSeen((s) => (s.includes(event.lessons[i].id) ? s : [...s, event.lessons[i].id]));
-  };
-  const lesson = event.lessons[current];
-  const last = event.lessons.length - 1;
+  const { current, lesson, seen, go, last } = useLessons();
 
   return (
     <div className="grid border border-ls-ink bg-ls-surface md:grid-cols-[17rem_1fr]">
@@ -232,45 +215,13 @@ function Lessons({ poolIds }: { poolIds: string[] }) {
   );
 }
 
-/** A gentle, never-judging nudge based on the tastes on the plate. */
-function balanceNote(count: Record<Taste, number>) {
-  if (count.Salty === 0) return "Nothing salty yet. A salty cheese, olives, or cured meat would wake it up.";
-  if (count.Sweet >= 2 && count.Heat === 0) return "Sweet with no heat. A little spice would play against it.";
-  if (count.Rich >= 3 && count.Acid + count.Heat <= 1) return "That's a rich one. Something sharp or spicy keeps every bite interesting.";
-  return "Nicely balanced. It's yours, so trust your palate.";
-}
-
 export default function Showcase() {
-  const [bringing, setBringing] = useState<string[]>(["burrata", "arugula"]);
-  const [confirmed, setConfirmed] = useState(false);
-  const [ideaTab, setIdeaTab] = useState<Category>("Cheese");
-  const [poolFilter, setPoolFilter] = useState<Category | "All">("All");
-  const [creation, setCreation] = useState<string[]>(["mozzarella", "basil"]);
-  const [showNames, setShowNames] = useState(true);
-  const [vegOnly, setVegOnly] = useState(false);
-  const [noNuts, setNoNuts] = useState(false);
-  const [crust, setCrust] = useState("thin");
+  const {
+    bringing, full, mine, pool, visiblePool, confirmed, confirm, toggleBring, ideaTab, setIdeaTab, poolFilter, setPoolFilter,
+    creation, toggleCreation, showNames, setShowNames, vegOnly, setVegOnly, noNuts, setNoNuts, crust, setCrust,
+    intoOven, afterBake, tasteCount,
+  } = usePotluck();
   const dialogRef = useRef<HTMLDialogElement>(null);
-
-  const full = bringing.length >= event.perGuest;
-  const mine = bringing.map((id) => ({ ...event.ideas.find((i) => i.id === id)!, broughtBy: "You" }));
-  const pool: Ingredient[] = [...event.pool, ...mine];
-  const visiblePool = pool.filter(
-    (i) => (poolFilter === "All" || i.category === poolFilter) && (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts),
-  );
-  const fitsDiet = (i: Ingredient) => (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts);
-  const onPizza = pool.filter((i) => creation.includes(i.id) && fitsDiet(i));
-  const intoOven = [...event.base, ...onPizza.filter((i) => !i.after).map((i) => i.name)];
-  const afterBake = onPizza.filter((i) => i.after).map((i) => i.name);
-  const tasteCount = Object.fromEntries(tastes.map((t) => [t, 0])) as Record<Taste, number>;
-  for (const t of [...event.baseTastes, ...onPizza.flatMap((i) => i.tastes ?? [])]) tasteCount[t]++;
-
-  const toggleBring = (id: string) => {
-    setConfirmed(false);
-    setBringing((b) => (b.includes(id) ? b.filter((x) => x !== id) : b.length < event.perGuest ? [...b, id] : b));
-    setCreation((c) => c.filter((x) => x !== id || !bringing.includes(id)));
-  };
-  const toggleCreation = (id: string) => setCreation((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
   const openHow = () => dialogRef.current?.showModal();
 
   return (
@@ -524,7 +475,7 @@ export default function Showcase() {
                     </ul>
                   )}
                   <div className="border-t border-ls-border p-5">
-                    <button type="button" disabled={mine.length === 0} onClick={() => setConfirmed(true)} className={`${primary.live} w-full`}>
+                    <button type="button" disabled={mine.length === 0} onClick={confirm} className={`${primary.live} w-full`}>
                       Add mine to the pool
                     </button>
                     {confirmed && (
