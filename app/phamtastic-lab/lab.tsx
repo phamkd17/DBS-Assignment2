@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, type ReactNode } from "react";
-import { categories, hostCreations, pastNights, tastes, type Creation, type HostCreation, type PastNight } from "@/lib/events";
+import { categories, pastNights, tastes, type Creation, type PastNight } from "@/lib/events";
 import { balanceNote, usePotluck } from "@/lib/use-potluck";
 import { chip, label, link, primary, secondary, tab } from "@/components/line-and-stone/styles";
 import { Badge, HowItWorks, Lessons, Meter, Toggle } from "@/components/line-and-stone/ui";
@@ -13,7 +13,6 @@ const nav = [
   ["Bring", "Bring", "#bring"],
   ["Learn", "Learn", "#learn"],
   ["Build", "Build", "#build"],
-  ["My kitchen", "Kitchen", "#kitchen"],
   ["Past nights", "Past", "#past"],
 ] as const;
 
@@ -62,15 +61,6 @@ export default function Lab() {
     setDetail({ night, creation });
     detailRef.current?.showModal();
   };
-  const dishRef = useRef<HTMLDialogElement>(null);
-  const [kind, setKind] = useState<HostCreation["kind"] | "All">("All");
-  const [dish, setDish] = useState<HostCreation | null>(null);
-  const kinds = ["All", ...Array.from(new Set(hostCreations.map((d) => d.kind)))] as const;
-  const shownDishes = hostCreations.filter((d) => kind === "All" || d.kind === kind);
-  const openDish = (d: HostCreation) => {
-    setDish(d);
-    dishRef.current?.showModal();
-  };
   const onPizzaCount = p.intoOven.length - p.event.base.length + p.afterBake.length;
 
   return (
@@ -78,14 +68,9 @@ export default function Lab() {
       <header className="sticky top-0 z-20 border-b border-ls-ink bg-ls-bg/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
           <a href="#top" className="font-ls-serif text-xl leading-none whitespace-nowrap outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-ls-ink">
-            <span className="sm:hidden" aria-label="Phamtastic Lab">
-              P<span className="italic">L</span>
-            </span>
-            <span className="hidden sm:inline">
-              Phamtastic <span className="italic">Lab</span>
-            </span>
+            Phamtastic <span className="italic">Lab</span>
           </a>
-          <nav aria-label="Sections" className="flex gap-3 sm:gap-7">
+          <nav aria-label="Sections" className="flex gap-3.5 sm:gap-7">
             {nav.map(([name, short, href]) => (
               <a key={href} href={href} className={`${label} shrink-0 py-2 text-ls-muted underline-offset-8 transition-colors hover:text-ls-ink hover:underline focus-visible:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink`}>
                 <span className="sm:hidden">{short}</span>
@@ -369,53 +354,6 @@ export default function Lab() {
           </div>
         </Step>
 
-        <section id="kitchen" className="scroll-mt-20 border-t border-ls-ink py-14 sm:py-20" aria-labelledby="kitchen-title">
-          <div className="mb-10 grid gap-3 sm:grid-cols-[8rem_1fr] sm:items-baseline">
-            <p className={`${label} text-ls-muted`}>From my kitchen</p>
-            <div>
-              <h2 id="kitchen-title" className="font-ls-serif text-5xl leading-none sm:text-6xl">
-                My creations
-              </h2>
-              <p className="mt-3 max-w-xl text-base leading-relaxed text-ls-muted">
-                Dishes I&rsquo;ve built at home, and the bit of food science that makes each one work. Steal any idea you like.
-              </p>
-            </div>
-          </div>
-          <div className="mb-6 flex flex-wrap gap-2" aria-label="Filter my creations">
-            {kinds.map((k) => (
-              <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} className={chip.live}>
-                {k}
-                <span className="text-[11px] opacity-70">{k === "All" ? hostCreations.length : hostCreations.filter((d) => d.kind === k).length}</span>
-              </button>
-            ))}
-          </div>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
-            {shownDishes.map((d) => (
-              <li key={d.id}>
-                <button
-                  type="button"
-                  onClick={() => openDish(d)}
-                  className="group block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-ls-ink"
-                >
-                  <span className="block overflow-hidden border border-ls-border">
-                    <Image
-                      src={d.image.src}
-                      alt={d.image.alt}
-                      width={d.image.w}
-                      height={d.image.h}
-                      sizes="(min-width: 1024px) 16rem, (min-width: 640px) 30vw, 45vw"
-                      className="aspect-[4/5] h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] group-active:scale-100"
-                    />
-                  </span>
-                  <span className={`${label} mt-3 block text-ls-muted`}>{d.kind}</span>
-                  <span className="mt-1 block font-ls-serif text-[22px] leading-tight group-hover:underline group-hover:underline-offset-4">{d.name}</span>
-                  <span className="mt-1 block text-sm leading-snug text-ls-muted">{d.summary}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <section id="past" className="scroll-mt-20 border-t border-ls-ink py-14 sm:py-20" aria-labelledby="past-title">
           <div className="mb-10 grid gap-3 sm:grid-cols-[8rem_1fr] sm:items-baseline">
             <p className={`${label} text-ls-muted`}>Archive</p>
@@ -488,48 +426,6 @@ export default function Lab() {
         onClick={(e) => e.target === howRef.current && howRef.current.close()}
       >
         <HowItWorks onClose={() => howRef.current?.close()} />
-      </dialog>
-
-      <dialog
-        ref={dishRef}
-        aria-label={dish?.name ?? "Creation"}
-        className="m-auto max-h-[calc(100dvh-2rem)] w-[min(36rem,calc(100vw-2rem))] border border-ls-ink bg-ls-surface p-0 text-ls-ink backdrop:bg-ls-ink/50"
-        onClick={(e) => e.target === dishRef.current && dishRef.current.close()}
-      >
-        {dish && (
-          <div>
-            <div className="flex items-center justify-between border-b border-ls-border px-5 py-3">
-              <span className={`${label} text-ls-muted`}>From my kitchen · {dish.kind}</span>
-              <button
-                type="button"
-                onClick={() => dishRef.current?.close()}
-                aria-label="Close"
-                className="grid size-9 cursor-pointer place-items-center text-xl leading-none hover:bg-ls-ink/[0.06] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ls-ink"
-              >
-                ×
-              </button>
-            </div>
-            <Image src={dish.image.src} alt={dish.image.alt} width={dish.image.w} height={dish.image.h} sizes="36rem" className="aspect-[4/3] h-auto w-full object-cover" />
-            <div className="space-y-4 p-5">
-              <h3 className="font-ls-serif text-[32px] leading-[1.15]">{dish.name}</h3>
-              <p className="text-base leading-relaxed">{dish.summary}</p>
-              <div className="border-l-2 border-ls-ink pl-4">
-                <p className={label}>Why it works</p>
-                <p className="mt-1 text-[15px] leading-relaxed">{dish.science}</p>
-              </div>
-              <div>
-                <p className={`${label} mb-2 text-ls-muted`}>What goes in</p>
-                <ul className="flex flex-wrap gap-2">
-                  {dish.ingredients.map((f) => (
-                    <li key={f}>
-                      <Badge>{f}</Badge>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
       </dialog>
 
       <dialog
