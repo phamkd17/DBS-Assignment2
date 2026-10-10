@@ -108,16 +108,16 @@ export default function Lab() {
     <div className="min-h-screen bg-ls-bg font-ls-sans text-ls-ink">
       <header className="sticky top-0 z-20 border-b border-ls-ink bg-ls-bg/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
-          <a href="#top" className="font-ls-serif text-xl leading-none whitespace-nowrap outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-ls-ink">
-            Phamtastic <span className="italic">Lab</span>
+          <a href="#top" className="font-ls-serif text-[17px] leading-none whitespace-nowrap sm:text-xl outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-ls-ink">
+            Phamtastic Food <span className="italic">Lab</span>
           </a>
-          <nav aria-label="Sections" className="flex gap-3.5 sm:gap-7">
+          <nav aria-label="Sections" className="flex gap-2.5 sm:gap-7">
             {nav.map(([name, short, href]) => (
               <a
                 key={href}
                 href={href}
                 aria-current={active === href.slice(1) ? "location" : undefined}
-                className={`${label} shrink-0 py-2 text-ls-muted decoration-1 underline-offset-8 transition-colors hover:text-ls-ink hover:underline focus-visible:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink aria-[current=location]:text-ls-ink aria-[current=location]:underline aria-[current=location]:decoration-2`}
+                className={`${label} shrink-0 py-2 text-ls-muted max-sm:tracking-[0.16em] decoration-1 underline-offset-8 transition-colors hover:text-ls-ink hover:underline focus-visible:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink aria-[current=location]:text-ls-ink aria-[current=location]:underline aria-[current=location]:decoration-2`}
               >
                 <span className="sm:hidden">{short}</span>
                 <span className="hidden sm:inline">{name}</span>
