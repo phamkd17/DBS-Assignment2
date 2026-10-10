@@ -1,4 +1,4 @@
-import { Bricolage_Grotesque, Instrument_Sans, Instrument_Serif, Jost } from "next/font/google";
+import { Bricolage_Grotesque, Figtree, Fraunces, Instrument_Sans, Instrument_Serif, Jost } from "next/font/google";
 
 // Line & Stone type: exposed as CSS variables so Tailwind's font-ls-serif / font-ls-sans work.
 export const instrumentSerif = Instrument_Serif({
@@ -30,3 +30,19 @@ export const instrumentSans = Instrument_Sans({
 });
 
 export const trailheadFonts = `${bricolage.variable} ${instrumentSans.variable}`;
+
+// Candlelit Table type
+export const fraunces = Fraunces({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
+  variable: "--font-fraunces",
+});
+
+export const figtree = Figtree({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-figtree",
+});
+
+export const candlelitFonts = `${fraunces.variable} ${figtree.variable}`;

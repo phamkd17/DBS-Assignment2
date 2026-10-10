@@ -87,7 +87,7 @@ Styles (photos are the owner's own, from `~/Desktop/Mood Board`, resized with EX
 Board data and palettes live in `lib/mood-boards.ts`; each board is 23 photos + 7 generated tiles = 30 artifacts.
 
 ### 3. Design systems (`/design-systems/[style]`)
-Status: **Line & Stone done** (`app/design-systems/line-and-stone/`), **Trailhead done** (`app/design-systems/trailhead/`, tokens `--color-th-*`, styles in `components/trailhead/styles.ts`). Candlelit Table not started.
+Status: **Line & Stone done** (`app/design-systems/line-and-stone/`), **Trailhead done** (`app/design-systems/trailhead/`, tokens `--color-th-*`, styles in `components/trailhead/styles.ts`), **Candlelit Table done** (`app/design-systems/candlelit-table/`, tokens `--color-ct-*`, styles in `components/candlelit-table/styles.ts`). All three design systems are complete.
 All systems share behavior through `lib/use-potluck.ts` (`usePotluck`, `useLessons`, `howItWorks`, `balanceNote`), so each one only restyles the same bring → learn → build components.
 Shared pieces: color tokens in `app/globals.css` (`--color-ls-*` → `bg-ls-bg`, `text-ls-ink`, …), fonts in `lib/fonts.ts`, component class strings with live and per-state variants in `components/line-and-stone/styles.ts`, event data (base, pool, ideas) in `lib/events.ts`, contrast math in `lib/contrast.ts`. Reuse these for the site; don't duplicate tokens.
 Tailwind v4 gotcha: `outline-none` also cancels `focus-visible:outline-2`. Pair focus rings with `focus-visible:outline-solid`.

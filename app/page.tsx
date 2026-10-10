@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { lineAndStone, moodBoards, trailhead } from "@/lib/mood-boards";
-import { bricolage, instrumentSerif } from "@/lib/fonts";
+import { candlelitTable, lineAndStone, moodBoards, trailhead } from "@/lib/mood-boards";
+import { bricolage, fraunces, instrumentSerif } from "@/lib/fonts";
 
-// Add each design system here once it is built.
-const designSystems = [trailhead, lineAndStone];
+const designSystems = [trailhead, lineAndStone, candlelitTable];
 const sampleFont: Record<string, string> = {
   trailhead: `${bricolage.className} font-extrabold`,
   "line-and-stone": instrumentSerif.className,
+  "candlelit-table": `${fraunces.className} italic`,
 };
 
 export default function Hub() {

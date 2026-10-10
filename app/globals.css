@@ -193,3 +193,103 @@ body {
   background: var(--color-th-disabled);
   cursor: not-allowed;
 }
+
+/* ── Candlelit Table design tokens ──────────────────────────── */
+@theme {
+  --color-ct-bg: #1e1510; /* Espresso */
+  --color-ct-surface: #2a1e17; /* cards, panels */
+  --color-ct-raised: #36281f; /* inputs, hover */
+  --color-ct-text: #f6eee0; /* Cream */
+  --color-ct-linen: #e6d7be;
+  --color-ct-muted: #cbb89a;
+  --color-ct-border: #8c7259; /* 3.6:1 on surface */
+  --color-ct-hairline: #4a382c; /* decorative dividers only */
+  --color-ct-accent: #e3a73c; /* Saffron: primary action only, Espresso label */
+  --color-ct-accent-hover: #edb955;
+  --color-ct-accent-pressed: #c98f2a;
+  --color-ct-selected: #7a2230; /* Claret, Cream label */
+  --color-ct-selected-hover: #8e2a3a;
+  --color-ct-walnut: #5e3820;
+  --color-ct-caramel: #d08a4c; /* links */
+  --color-ct-error: #e58a7a; /* Rose */
+  --color-ct-success: #9db86a; /* Herb, lifted for dark */
+  --color-ct-disabled: #3a2d24;
+  --shadow-ct-glow: 0 18px 40px -18px rgb(227 167 60 / 0.35), 0 0 0 1px rgb(140 114 89 / 0.35);
+  --shadow-ct-glow-strong: 0 0 0 1px rgb(227 167 60 / 0.6), 0 0 28px 2px rgb(227 167 60 / 0.35);
+  --shadow-ct-press: inset 0 2px 6px rgb(0 0 0 / 0.35);
+}
+
+@theme inline {
+  --font-ct-serif: var(--font-fraunces);
+  --font-ct-sans: var(--font-figtree);
+}
+
+.ct-check,
+.ct-radio {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  border: 1.5px solid var(--color-ct-border);
+  border-radius: 6px;
+  background: var(--color-ct-raised);
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms;
+}
+.ct-radio {
+  border-radius: 9999px;
+}
+.ct-check::before {
+  content: "";
+  width: 0.7rem;
+  height: 0.7rem;
+  transform: scale(0);
+  background: var(--color-ct-text);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.ct-radio::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  transform: scale(0);
+  background: var(--color-ct-text);
+}
+.ct-check:checked,
+.ct-radio:checked {
+  background: var(--color-ct-selected);
+  border-color: var(--color-ct-linen);
+}
+.ct-check:checked::before,
+.ct-radio:checked::before {
+  transform: scale(1);
+}
+.ct-check:hover:not(:disabled),
+.ct-radio:hover:not(:disabled) {
+  border-color: var(--color-ct-accent);
+}
+.ct-check:focus-visible,
+.ct-radio:focus-visible {
+  outline: 2px solid var(--color-ct-accent);
+  outline-offset: 3px;
+}
+.ct-check:disabled,
+.ct-radio:disabled {
+  border-color: var(--color-ct-hairline);
+  background: var(--color-ct-disabled);
+  cursor: not-allowed;
+}
+
+@keyframes ct-flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  40% { opacity: 0.75; transform: scale(0.94); }
+  70% { opacity: 0.9; transform: scale(1.04); }
+}
+.ct-flicker {
+  animation: ct-flicker 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-flicker { animation: none; }
+}
