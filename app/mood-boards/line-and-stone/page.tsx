@@ -59,14 +59,14 @@ const generated = {
   9: (
     <Generated theme={theme} className="p-6" style={{ background: c.Plaster, border: hairline }}>
       <p className={label} style={{ color: c.Slate }}>
-        Menu · No. 04
+        Build your plate
       </p>
       <div className="my-4 h-px" style={{ background: c.Ink }} />
       <p className={`${display.className} text-4xl leading-[1.05]`}>
-        Seven courses, <em>one long table.</em>
+        Your plate, <em>your rules.</em>
       </p>
       <p className="mt-4 text-sm leading-relaxed">
-        Served slowly, in order, with a pause between each plate.
+        I set out the options. You put together the meal you want.
       </p>
     </Generated>
   ),
@@ -89,14 +89,14 @@ const generated = {
   17: (
     <Generated theme={theme} className="flex flex-col gap-3 p-5" style={{ background: c.Plaster, border: hairline }}>
       <span className={`block px-5 py-3 text-center ${label}`} style={{ background: c.Aegean, color: c.Plaster }}>
-        Reserve a seat
+        Add to my plate
       </span>
       <span className={`block px-5 py-3 text-center ${label}`} style={{ border: hairline }}>
-        View menu
+        See all dishes
       </span>
-      <span className="text-sm underline underline-offset-4">See every dish →</span>
+      <span className="text-sm underline underline-offset-4">How it works →</span>
       <div className="mt-1 flex gap-5 border-b" style={{ borderColor: c.Stone }}>
-        {["Primi", "Secondi", "Dolci"].map((t, i) => (
+        {["Starters", "Mains", "Desserts"].map((t, i) => (
           <span
             key={t}
             className={`-mb-px pb-2 ${label}`}
@@ -111,7 +111,7 @@ const generated = {
   22: (
     <Generated theme={theme} className="p-6 text-center" style={{ background: c.Plaster, border: hairline }}>
       <p className={label} style={{ color: c.Slate }}>
-        II · Primi
+        Pasta
       </p>
       <p className={`${display.className} mt-3 text-2xl leading-snug`}>
         Hand-cut tagliatelle, brown butter, sage

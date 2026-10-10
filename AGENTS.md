@@ -13,6 +13,12 @@ The site is a **personal culinary showcase** for dinner parties:
 
 **Audience:** the owner's friends and dinner guests, mostly opening a shared link on their phones.
 
+### Culinary philosophy (guides all copy and UX)
+The host provides an exceptional platform; **the guest is the final chef**. Guests are the masters of their own palate, and they build their own perfect meal from what's on offer.
+- **Tone:** warm, casual, and guest-centered. Never pretentious: no tasting-menu or fine-dining language ("seven courses," "served in order," French/Italian course names like *Primi*), and no telling guests how to eat.
+- **Voice:** speak to the guest ("you pick," "your plate"). The host's role is to set things up and cook ("I'll cook it").
+- **UX:** choice and control come first. Selecting, combining, and building a meal is the main interaction, not passively browsing a fixed menu.
+
 ## How we work (important)
 
 - **The user directs the design. You carry it out.** The brief says every change must come from the user looking at the screen and naming what to change, using UI element names and design principles. Don't build big chunks unprompted.

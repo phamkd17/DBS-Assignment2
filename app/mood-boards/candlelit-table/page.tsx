@@ -56,9 +56,9 @@ const generated = {
     <Generated theme={theme} className="p-6" style={{ background: c.Claret, color: c.Cream }}>
       <p className="text-xs uppercase tracking-[0.2em] opacity-85">Saturday, 8 pm</p>
       <p className={`${display.className} mt-3 text-3xl leading-tight`}>
-        Six plates, one table, <em>candles lit at eight.</em>
+        Tonight, <em>you&rsquo;re the chef.</em>
       </p>
-      <p className="mt-3 text-sm leading-relaxed opacity-90">Pick what you&rsquo;d like served.</p>
+      <p className="mt-3 text-sm leading-relaxed opacity-90">Pick the dishes you love. I&rsquo;ll cook them.</p>
     </Generated>
   ),
   13: (
