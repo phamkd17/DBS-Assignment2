@@ -84,7 +84,7 @@ export default function Lab() {
   const p = usePotluck();
   const active = useActiveSection(sectionIds);
   const [ownName, setOwnName] = useState("");
-  const [ownCategory, setOwnCategory] = useState<Category>("Veg");
+  const [ownCategory, setOwnCategory] = useState<Category>("Produce");
   const [ownError, setOwnError] = useState<string | null>(null);
   const [ownAdded, setOwnAdded] = useState<string | null>(null);
   const submitOwn = (e: React.FormEvent) => {

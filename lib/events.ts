@@ -2,8 +2,8 @@
 // shared pool, and everyone builds their own creation from the base + pool.
 // Guest names and contributions are placeholders until the owner provides real ones.
 
-export type Category = "Cheese" | "Veg" | "Meat & fish" | "Finish";
-export const categories: Category[] = ["Cheese", "Veg", "Meat & fish", "Finish"];
+export type Category = "Cheese" | "Produce" | "Proteins" | "Finish";
+export const categories: Category[] = ["Cheese", "Produce", "Proteins", "Finish"];
 
 export type Taste = "Salty" | "Sweet" | "Sour" | "Spicy" | "Umami";
 export const tastes: Taste[] = ["Salty", "Sweet", "Sour", "Spicy", "Umami"];
@@ -52,7 +52,7 @@ const veg = (id: string, name: string, category: Category, extra: Partial<Ingred
 const meat = (id: string, name: string, extra: Partial<Ingredient> = {}): Ingredient => ({
   id,
   name,
-  category: "Meat & fish",
+  category: "Proteins",
   vegetarian: false,
   ...extra,
 });
@@ -70,19 +70,19 @@ export const pizzaNight: CulinaryEvent = {
     veg("mozzarella", "Fresh mozzarella", "Cheese", { broughtBy: "Maya" }),
     veg("basil", "Basil", "Finish", { after: true, broughtBy: "Maya" }),
     meat("prosciutto", "Prosciutto", { tastes: ["Salty", "Umami"], after: true, broughtBy: "Maya" }),
-    veg("mushrooms", "Roasted mushrooms", "Veg", { tastes: ["Umami"], broughtBy: "Jordan" }),
+    veg("mushrooms", "Roasted mushrooms", "Produce", { tastes: ["Umami"], broughtBy: "Jordan" }),
     veg("hot-honey", "Hot honey", "Finish", { tastes: ["Sweet", "Spicy"], after: true, broughtBy: "Jordan" }),
     veg("pecorino", "Pecorino", "Cheese", { tastes: ["Salty", "Umami"], broughtBy: "Jordan" }),
-    veg("red-onion", "Red onion", "Veg", { tastes: ["Sweet"], broughtBy: "Sam" }),
-    veg("olives", "Castelvetrano olives", "Veg", { tastes: ["Salty", "Sour"], broughtBy: "Sam" }),
+    veg("red-onion", "Red onion", "Produce", { tastes: ["Sweet"], broughtBy: "Sam" }),
+    veg("olives", "Castelvetrano olives", "Produce", { tastes: ["Salty", "Sour"], broughtBy: "Sam" }),
   ],
   ideas: [
     veg("burrata", "Burrata", "Cheese", { after: true }),
     veg("ricotta", "Ricotta", "Cheese"),
     veg("gorgonzola", "Gorgonzola", "Cheese", { tastes: ["Salty", "Umami"] }),
-    veg("arugula", "Arugula", "Veg", { tastes: ["Spicy"], after: true }),
-    veg("peppers", "Roasted peppers", "Veg", { tastes: ["Sweet"] }),
-    veg("figs", "Fresh figs", "Veg", { tastes: ["Sweet"] }),
+    veg("arugula", "Arugula", "Produce", { tastes: ["Spicy"], after: true }),
+    veg("peppers", "Roasted peppers", "Produce", { tastes: ["Sweet"] }),
+    veg("figs", "Fresh figs", "Produce", { tastes: ["Sweet"] }),
     meat("soppressata", "Spicy soppressata", { tastes: ["Salty", "Spicy", "Umami"] }),
     meat("anchovies", "Anchovies", { tastes: ["Salty", "Umami"] }),
     meat("sausage", "Fennel sausage", { tastes: ["Salty", "Umami"] }),

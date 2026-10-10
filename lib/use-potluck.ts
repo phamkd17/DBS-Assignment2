@@ -79,7 +79,7 @@ export function usePotluck() {
       toggleBring(idea.id);
       return null;
     }
-    const item: Ingredient = { id: `custom-${Date.now()}`, name: name.charAt(0).toUpperCase() + name.slice(1), category, vegetarian: category !== "Meat & fish" };
+    const item: Ingredient = { id: `custom-${Date.now()}`, name: name.charAt(0).toUpperCase() + name.slice(1), category, vegetarian: category !== "Proteins" };
     setCustom((c) => [...c, item]);
     setConfirmed(false);
     setBringing((b) => [...b, item.id]);
