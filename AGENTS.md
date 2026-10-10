@@ -34,7 +34,7 @@ What this means for the site:
 - **Main interactions** (all faked in the browser): (a) a guest **claims the ingredients they'll bring** (up to the limit, e.g. 3) and sees the shared pool grow; (b) a guest **learns the principles** for tonight's theme; (c) a guest **builds their creation** from the base and the pool. Where it helps, connect the lesson to the build: tips beside relevant ingredients ("goes on after the bake," "very wet: use sparingly") or a light check on balance (salty, sweet, acid, heat).
 - **Tone for lessons:** curious and generous, like a friend explaining something cool in the kitchen. Plain words, one idea at a time, no lecturing, and never tell a guest their creation is wrong. Knowledge is a tool the guest is free to use or ignore.
 - **Language:** "bring," "pool," "learn," "build," "your creation." The host's role is "I'll provide the dough and sauce, and show you why it works," never "I'll cook your order."
-- The Line & Stone design system follows the claim → pool → build model (`lib/events.ts`). It doesn't have a **lessons** component yet. Add one (e.g. a "Why it works" card or a step list) when building the next design system or the site.
+- The Line & Stone design system follows the claim → pool → build model (`lib/events.ts`). It also has a **lessons** component ("Why it works": a numbered lesson list, the principle, an "At the table" takeaway, and which pool ingredients it applies to). The builder applies the lessons: it splits the creation into "Into the oven" and "After the bake" and shows a salty/sweet/acid/heat/rich balance with a gentle nudge. New design systems should include the same pieces.
 
 ## How we work (important)
 

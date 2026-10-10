@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, type ReactNode } from "react";
 import { contrast } from "@/lib/contrast";
-import { categories, pastCreation, pizzaNight as event, type Category, type Ingredient } from "@/lib/events";
+import { categories, pastCreation, pizzaNight as event, tastes, type Category, type Ingredient, type Taste } from "@/lib/events";
 import {
   chip,
   controlStates,
@@ -43,6 +43,7 @@ const steps = [
   ["I pick a theme.", "Tonight it’s pizza, so I make the dough and tomato sauce."],
   ["You bring three ingredients.", "Claim them here so we don’t double up."],
   ["It all goes in the pool.", "Everyone can use anything anyone brought."],
+  ["I show you why it works.", "A few bits of food science, so you know what makes a pizza great."],
   ["You build your creation.", "Mix and match. No two plates come out the same."],
 ];
 
@@ -142,6 +143,103 @@ function HowItWorks({ onClose }: { onClose?: () => void }) {
   );
 }
 
+const allIngredients = [...event.pool, ...event.ideas];
+const ingredientName = (id: string) => allIngredients.find((i) => i.id === id)?.name ?? id;
+
+/** Food-science lessons: pick a principle, read why it works, and see which ingredients it applies to. */
+function Lessons({ poolIds }: { poolIds: string[] }) {
+  const [current, setCurrent] = useState(0);
+  const [seen, setSeen] = useState<string[]>([event.lessons[0].id]);
+  const go = (i: number) => {
+    setCurrent(i);
+    setSeen((s) => (s.includes(event.lessons[i].id) ? s : [...s, event.lessons[i].id]));
+  };
+  const lesson = event.lessons[current];
+  const last = event.lessons.length - 1;
+
+  return (
+    <div className="grid border border-ls-ink bg-ls-surface md:grid-cols-[17rem_1fr]">
+      <div className="border-b border-ls-border md:border-r md:border-b-0">
+        <div className="border-b border-ls-border px-5 py-4">
+          <h3 className="font-ls-serif text-2xl">Why it works</h3>
+          <p className="text-sm text-ls-muted">
+            {seen.length} of {event.lessons.length} read
+          </p>
+        </div>
+        <ol>
+          {event.lessons.map((l, i) => (
+            <li key={l.id} className="border-b border-ls-border last:border-b-0">
+              <button
+                type="button"
+                aria-current={i === current ? "step" : undefined}
+                onClick={() => go(i)}
+                className="flex w-full cursor-pointer items-baseline gap-3 px-5 py-3 text-left text-[15px] transition-colors hover:bg-ls-ink/[0.04] active:bg-ls-ink/[0.08] focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-ls-ink aria-[current=step]:bg-ls-ink aria-[current=step]:text-ls-surface aria-[current=step]:hover:bg-ls-ink"
+              >
+                <span className="font-ls-serif text-xl leading-none">{i + 1}</span>
+                <span className="flex-1">{l.title}</span>
+                {seen.includes(l.id) && (
+                  <span aria-label="read" className="text-xs">
+                    ✓
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="flex flex-col p-6" aria-live="polite">
+        <p className={`${label} text-ls-muted`}>
+          Lesson {current + 1} of {event.lessons.length}
+        </p>
+        <h4 className="mt-2 font-ls-serif text-[32px] leading-[1.15]">{lesson.title}</h4>
+        <p className="mt-4 max-w-prose text-base leading-relaxed">{lesson.principle}</p>
+        <div className="mt-5 border-l-2 border-ls-ink pl-4">
+          <p className={label}>At the table</p>
+          <p className="mt-1 max-w-prose text-[15px] leading-relaxed">{lesson.takeaway}</p>
+        </div>
+        {lesson.related.length > 0 && (
+          <div className="mt-5">
+            <p className={`${label} mb-2 text-ls-muted`}>Applies to</p>
+            <ul className="flex flex-wrap gap-2">
+              {lesson.related.map((id) => (
+                <li key={id}>
+                  <Badge tone={poolIds.includes(id) ? "solid" : "outline"}>
+                    {ingredientName(id)}
+                    {poolIds.includes(id) ? " · in the pool" : ""}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="mt-auto flex gap-3 pt-6">
+          <button type="button" disabled={current === 0} onClick={() => go(current - 1)} className={secondary.live}>
+            ← Back
+          </button>
+          {current < last ? (
+            <button type="button" onClick={() => go(current + 1)} className={secondary.live}>
+              Next lesson →
+            </button>
+          ) : (
+            <a href="#build" className={primary.live}>
+              Start building
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** A gentle, never-judging nudge based on the tastes on the plate. */
+function balanceNote(count: Record<Taste, number>) {
+  if (count.Salty === 0) return "Nothing salty yet. A salty cheese, olives, or cured meat would wake it up.";
+  if (count.Sweet >= 2 && count.Heat === 0) return "Sweet with no heat. A little spice would play against it.";
+  if (count.Rich >= 3 && count.Acid + count.Heat <= 1) return "That's a rich one. Something sharp or spicy keeps every bite interesting.";
+  return "Nicely balanced. It's yours, so trust your palate.";
+}
+
 export default function Showcase() {
   const [bringing, setBringing] = useState<string[]>(["burrata", "arugula"]);
   const [confirmed, setConfirmed] = useState(false);
@@ -161,7 +259,11 @@ export default function Showcase() {
     (i) => (poolFilter === "All" || i.category === poolFilter) && (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts),
   );
   const fitsDiet = (i: Ingredient) => (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts);
-  const creationNames = [...event.base, ...pool.filter((i) => creation.includes(i.id) && fitsDiet(i)).map((i) => i.name)];
+  const onPizza = pool.filter((i) => creation.includes(i.id) && fitsDiet(i));
+  const intoOven = [...event.base, ...onPizza.filter((i) => !i.after).map((i) => i.name)];
+  const afterBake = onPizza.filter((i) => i.after).map((i) => i.name);
+  const tasteCount = Object.fromEntries(tastes.map((t) => [t, 0])) as Record<Taste, number>;
+  for (const t of [...event.baseTastes, ...onPizza.flatMap((i) => i.tastes ?? [])]) tasteCount[t]++;
 
   const toggleBring = (id: string) => {
     setConfirmed(false);
@@ -485,7 +587,7 @@ export default function Showcase() {
                 </article>
               </div>
 
-              <div>
+              <div id="build" className="scroll-mt-6">
                 <Caption>Pool and builder · filter chips, checkboxes, radio, toggle</Caption>
                 <div className="border border-ls-ink bg-ls-surface">
                   <div className="border-b border-ls-border px-5 py-4">
@@ -549,7 +651,36 @@ export default function Showcase() {
                   </div>
                   <div className="border-t border-ls-border p-5">
                     <p className={`${label} text-ls-muted`}>Your creation · {crust === "thin" ? "thin crust" : "thick crust"}</p>
-                    <p className="mt-2 font-ls-serif text-2xl leading-snug">{creationNames.join(", ")}</p>
+                    <dl className="mt-3 space-y-3">
+                      <div>
+                        <dt className="text-sm text-ls-muted">Into the oven</dt>
+                        <dd className="font-ls-serif text-2xl leading-snug">{intoOven.join(", ")}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-ls-muted">After the bake</dt>
+                        <dd className="font-ls-serif text-2xl leading-snug">
+                          {afterBake.length ? afterBake.join(", ") : <span className="text-ls-muted">Nothing yet</span>}
+                        </dd>
+                      </div>
+                    </dl>
+                    <div className="mt-5 border-t border-ls-border pt-4">
+                      <p className={`${label} mb-3 text-ls-muted`}>Balance</p>
+                      <ul className="grid grid-cols-5 gap-2">
+                        {tastes.map((t) => (
+                          <li key={t} className="text-center" aria-label={`${t}: ${tasteCount[t]}`}>
+                            <div className="mb-1.5 flex h-10 flex-col-reverse gap-0.5">
+                              {Array.from({ length: 4 }, (_, k) => (
+                                <span key={k} className={`h-2 ${k < tasteCount[t] ? "bg-ls-ink" : "bg-ls-rule/40"}`} />
+                              ))}
+                            </div>
+                            <span className="text-xs text-ls-muted">{t}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-3 text-sm" aria-live="polite">
+                        {balanceNote(tasteCount)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -575,6 +706,11 @@ export default function Showcase() {
                 </article>
               </div>
             </div>
+          </div>
+
+          <div id="lessons" className="mt-12 scroll-mt-6">
+            <Caption>Lessons · the food science behind tonight&rsquo;s theme</Caption>
+            <Lessons poolIds={pool.map((i) => i.id)} />
           </div>
 
           <div className="mt-12">
