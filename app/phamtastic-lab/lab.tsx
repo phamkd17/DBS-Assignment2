@@ -545,7 +545,7 @@ export default function Lab() {
                             width={c.image.w}
                             height={c.image.h}
                             sizes="(min-width: 1024px) 14rem, 45vw"
-                            className="aspect-[4/5] h-auto w-full object-cover opacity-90 saturate-[.7] transition-[transform,filter,opacity] duration-300 group-hover:scale-[1.03] group-hover:opacity-100 group-hover:saturate-100 group-focus-visible:opacity-100 group-focus-visible:saturate-100 group-active:scale-100"
+                            className="aspect-[4/5] h-auto w-full object-cover opacity-85 saturate-[.35] transition-[transform,filter,opacity] duration-300 group-hover:scale-[1.03] group-hover:opacity-100 group-hover:saturate-100 group-focus-visible:opacity-100 group-focus-visible:saturate-100 group-active:scale-100"
                           />
                         </span>
                         <span className="mt-2 block font-ls-serif text-xl leading-tight text-ls-ink/85 group-hover:text-ls-ink group-hover:underline group-hover:underline-offset-4">
