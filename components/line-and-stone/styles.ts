@@ -11,7 +11,7 @@ const focusRing =
 const forcedFocus = "outline-2 outline-offset-2 outline-ls-ink";
 
 const buttonBase =
-  "inline-flex min-h-11 items-center justify-center gap-2 px-6 font-ls-sans text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-150 select-none cursor-pointer";
+  "inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap px-6 font-ls-sans text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-150 select-none cursor-pointer";
 
 export const primary = {
   live: `${buttonBase} ${focusRing} bg-ls-accent text-ls-surface hover:bg-ls-accent-hover active:translate-y-px active:bg-ls-accent-pressed aria-pressed:bg-ls-ink disabled:cursor-not-allowed disabled:bg-ls-disabled disabled:text-ls-muted`,

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, type ReactNode } from "react";
 import { contrast } from "@/lib/contrast";
-import { dishes, type Course, type Dish } from "@/lib/dishes";
+import { categories, pastCreation, pizzaNight as event, type Category, type Ingredient } from "@/lib/events";
 import {
   chip,
   controlStates,
@@ -32,19 +32,23 @@ const colorRoles = [
 ];
 
 const typeRoles = [
-  { role: "Display", spec: "Instrument Serif · 400 · 64/64", className: "font-ls-serif text-5xl leading-none sm:text-[64px]", sample: "Your plate, your rules." },
-  { role: "Heading", spec: "Instrument Serif · 400 · 32/38", className: "font-ls-serif text-[32px] leading-[1.2]", sample: "Tonight's dishes" },
-  { role: "Body", spec: "Jost · 400 · 16/26", className: "font-ls-sans text-base leading-relaxed", sample: "Pick a starter, a main, and something sweet. I'll cook whatever you choose." },
-  { role: "Label", spec: "Jost · 500 · 11/16 · caps, +0.22em", className: label, sample: "Your plate · 3 dishes" },
+  { role: "Display", spec: "Instrument Serif · 400 · 64/64", className: "font-ls-serif text-5xl leading-none sm:text-[64px]", sample: "Your creation, your rules." },
+  { role: "Heading", spec: "Instrument Serif · 400 · 32/38", className: "font-ls-serif text-[32px] leading-[1.2]", sample: "Pizza night · October 18" },
+  { role: "Body", spec: "Jost · 400 · 16/26", className: "font-ls-sans text-base leading-relaxed", sample: "I’ll make the dough and sauce. You bring three toppings. Then build whatever you like from everything on the table." },
+  { role: "Label", spec: "Jost · 500 · 11/16 · caps, +0.22em", className: label, sample: "You’re bringing · 2 of 3" },
 ];
 
 const spacing = [4, 8, 12, 16, 24, 32, 48, 64];
-const courses: Course[] = ["Starter", "Main", "Dessert"];
-const filters = ["All", "Seafood", "Vegetarian", "Pasta", "Sweet"];
+const steps = [
+  ["I pick a theme.", "Tonight it’s pizza, so I make the dough and tomato sauce."],
+  ["You bring three ingredients.", "Claim them here so we don’t double up."],
+  ["It all goes in the pool.", "Everyone can use anything anyone brought."],
+  ["You build your creation.", "Mix and match. No two plates come out the same."],
+];
 
-function Section({ n, title, children }: { n: string; title: string; children: ReactNode }) {
+function Section({ n, title, id, children }: { n: string; title: string; id?: string; children: ReactNode }) {
   return (
-    <section className="border-t border-ls-ink pt-6 pb-14">
+    <section id={id} className="border-t border-ls-ink pt-6 pb-14">
       <h2 className={`${label} mb-8 flex gap-4`}>
         <span className="text-ls-muted">{n}</span>
         {title}
@@ -70,21 +74,20 @@ function Badge({ children, tone = "outline" }: { children: ReactNode; tone?: "ou
   );
 }
 
-function Toggle({ checked, onChange, labelText, disabled }: { checked: boolean; onChange?: (v: boolean) => void; labelText: string; disabled?: boolean }) {
+function Toggle({ checked, onChange, labelText }: { checked: boolean; onChange: (v: boolean) => void; labelText: string }) {
   return (
-    <label className={`inline-flex items-center gap-3 font-ls-sans text-[15px] ${disabled ? "text-ls-muted" : "cursor-pointer"}`}>
+    <label className="inline-flex cursor-pointer items-center gap-3 font-ls-sans text-[15px]">
       <button
         type="button"
         role="switch"
         aria-checked={checked}
-        disabled={disabled}
-        onClick={() => onChange?.(!checked)}
-        className="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-ls-ink bg-ls-surface transition-colors hover:bg-[color-mix(in_srgb,var(--color-ls-ink)_6%,var(--color-ls-surface))] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink aria-checked:bg-ls-ink disabled:cursor-not-allowed disabled:border-ls-border disabled:bg-ls-disabled"
+        onClick={() => onChange(!checked)}
+        className="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-ls-ink bg-ls-surface transition-colors hover:bg-[color-mix(in_srgb,var(--color-ls-ink)_6%,var(--color-ls-surface))] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ls-ink aria-checked:bg-ls-ink"
       >
         <span
           className={`absolute top-1/2 left-[3px] size-4 -translate-y-1/2 rounded-full transition-transform duration-150 ${
             checked ? "translate-x-5 bg-ls-surface" : "bg-ls-ink"
-          } ${disabled ? "bg-ls-border" : ""}`}
+          }`}
         />
       </button>
       {labelText}
@@ -92,69 +95,81 @@ function Toggle({ checked, onChange, labelText, disabled }: { checked: boolean; 
   );
 }
 
-function DishDetail({ dish, onClose, onAdd, added }: { dish: Dish; onClose?: () => void; onAdd: () => void; added: boolean }) {
+/** Three-segment meter: how many of your ingredients you've claimed. */
+function Meter({ value, max }: { value: number; max: number }) {
+  return (
+    <div className="flex gap-1" role="meter" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-label="Ingredients claimed">
+      {Array.from({ length: max }, (_, i) => (
+        <span key={i} className={`h-1 flex-1 ${i < value ? "bg-ls-ink" : "bg-ls-rule/50"}`} />
+      ))}
+    </div>
+  );
+}
+
+function HowItWorks({ onClose }: { onClose?: () => void }) {
   return (
     <div className="bg-ls-surface">
       <div className="flex items-center justify-between border-b border-ls-border px-5 py-3">
-        <span className={`${label} text-ls-muted`}>{dish.course}</span>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="grid size-9 cursor-pointer place-items-center text-xl leading-none text-ls-ink hover:bg-ls-ink/[0.06] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ls-ink"
-        >
-          ×
-        </button>
+        <span className={`${label} text-ls-muted`}>How it works</span>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="grid size-9 cursor-pointer place-items-center text-xl leading-none text-ls-ink hover:bg-ls-ink/[0.06] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ls-ink"
+          >
+            ×
+          </button>
+        )}
       </div>
-      <Image
-        src={dish.image.src}
-        alt={dish.image.alt}
-        width={dish.image.w}
-        height={dish.image.h}
-        sizes="(min-width: 640px) 32rem, 100vw"
-        className="aspect-[16/10] h-auto w-full object-cover"
-      />
-      <div className="space-y-4 p-5">
-        <h3 className="font-ls-serif text-[32px] leading-[1.2] text-ls-ink">{dish.name}</h3>
-        <p className="font-ls-sans text-base leading-relaxed text-ls-ink">{dish.description}</p>
-        <div className="flex flex-wrap gap-2">
-          {dish.favorite && <Badge tone="solid">Guest favorite</Badge>}
-          {dish.tags.map((t) => (
-            <Badge key={t}>{t}</Badge>
+      <div className="p-5">
+        <h3 className="font-ls-serif text-[32px] leading-[1.2]">{event.theme}</h3>
+        <p className="text-sm text-ls-muted">
+          {event.date} · {event.time}
+        </p>
+        <ol className="mt-5 divide-y divide-ls-border border-y border-ls-border">
+          {steps.map(([head, rest], i) => (
+            <li key={head} className="flex gap-4 py-3">
+              <span className="font-ls-serif text-2xl leading-none text-ls-muted">{i + 1}</span>
+              <p className="text-[15px] leading-relaxed">
+                <span className="font-medium">{head}</span> {rest}
+              </p>
+            </li>
           ))}
-        </div>
-        <p className="font-ls-sans text-sm text-ls-muted">First made {dish.firstMade}</p>
-        <button type="button" aria-pressed={added} onClick={onAdd} className={`${primary.live} w-full`}>
-          {added ? "✓ On my plate" : "Add to my plate"}
-        </button>
+        </ol>
       </div>
     </div>
   );
 }
 
 export default function Showcase() {
-  const [plate, setPlate] = useState<string[]>(["baked-oysters", "farfalle"]);
-  const [sent, setSent] = useState(false);
-  const [activeCourse, setActiveCourse] = useState<Course>("Main");
-  const [activeFilters, setActiveFilters] = useState<string[]>(["All"]);
-  const [veg, setVeg] = useState(true);
+  const [bringing, setBringing] = useState<string[]>(["burrata", "arugula"]);
+  const [confirmed, setConfirmed] = useState(false);
+  const [ideaTab, setIdeaTab] = useState<Category>("Cheese");
+  const [poolFilter, setPoolFilter] = useState<Category | "All">("All");
+  const [creation, setCreation] = useState<string[]>(["mozzarella", "basil"]);
+  const [showNames, setShowNames] = useState(true);
+  const [vegOnly, setVegOnly] = useState(false);
   const [noNuts, setNoNuts] = useState(false);
-  const [portion, setPortion] = useState("taste");
-  const [seasonal, setSeasonal] = useState(false);
+  const [crust, setCrust] = useState("thin");
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const featured = dishes.find((d) => d.id === "farfalle")!;
-  const togglePlate = (id: string) => {
-    setSent(false);
-    setPlate((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+  const full = bringing.length >= event.perGuest;
+  const mine = bringing.map((id) => ({ ...event.ideas.find((i) => i.id === id)!, broughtBy: "You" }));
+  const pool: Ingredient[] = [...event.pool, ...mine];
+  const visiblePool = pool.filter(
+    (i) => (poolFilter === "All" || i.category === poolFilter) && (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts),
+  );
+  const fitsDiet = (i: Ingredient) => (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts);
+  const creationNames = [...event.base, ...pool.filter((i) => creation.includes(i.id) && fitsDiet(i)).map((i) => i.name)];
+
+  const toggleBring = (id: string) => {
+    setConfirmed(false);
+    setBringing((b) => (b.includes(id) ? b.filter((x) => x !== id) : b.length < event.perGuest ? [...b, id] : b));
+    setCreation((c) => c.filter((x) => x !== id || !bringing.includes(id)));
   };
-  const toggleFilter = (f: string) =>
-    setActiveFilters((cur) => {
-      if (f === "All") return ["All"];
-      const next = cur.includes(f) ? cur.filter((x) => x !== f) : [...cur.filter((x) => x !== "All"), f];
-      return next.length ? next : ["All"];
-    });
-  const plateDishes = plate.map((id) => dishes.find((d) => d.id === id)!).filter(Boolean);
+  const toggleCreation = (id: string) => setCreation((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
+  const openHow = () => dialogRef.current?.showModal();
 
   return (
     <main className="min-h-screen bg-ls-bg font-ls-sans text-ls-ink">
@@ -172,8 +187,9 @@ export default function Showcase() {
           <p className={`${label} text-ls-muted`}>Design system</p>
           <h1 className="mt-3 font-ls-serif text-6xl leading-none sm:text-8xl">Line &amp; Stone</h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ls-muted">
-            A quiet, precise kit for a table where the guest is the chef. Ink hairlines instead of shadows, square
-            corners, and one blue reserved for the action that matters: adding a dish to your plate.
+            A quiet, precise kit for themed potluck nights where the guest is the chef. Ink hairlines instead of
+            shadows, square corners, and one blue saved for the action that matters: bringing your ingredients to the
+            table.
           </p>
         </header>
 
@@ -266,37 +282,38 @@ export default function Showcase() {
 
         <Section n="04" title="Components">
           <div className="grid gap-12 lg:grid-cols-2">
+            {/* Left: claiming what you'll bring */}
             <div className="space-y-10">
               <div>
                 <Caption>Buttons and link</Caption>
                 <div className="flex flex-wrap items-center gap-3">
                   <button type="button" className={primary.live}>
-                    Add to my plate
+                    Bring this
                   </button>
                   <button type="button" className={secondary.live}>
-                    See all dishes
+                    See the pool
                   </button>
-                  <a href="#ui-states" className={link}>
+                  <button type="button" onClick={openHow} className={`${link} cursor-pointer`}>
                     How it works →
-                  </a>
+                  </button>
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="ls-search" className={`${label} mb-2 block`}>
-                    Search dishes
+                    Search ingredients
                   </label>
-                  <input id="ls-search" type="search" placeholder="Try “oysters”" className={input.live} />
+                  <input id="ls-search" type="search" placeholder="Try “basil”" className={input.live} />
                 </div>
                 <div>
                   <label htmlFor="ls-sort" className={`${label} mb-2 block`}>
-                    Sort by
+                    Sort the pool
                   </label>
                   <div className="relative">
-                    <select id="ls-sort" className={`${input.live} cursor-pointer appearance-none pr-9`} defaultValue="loved">
-                      <option value="loved">Most loved</option>
-                      <option value="new">Newest</option>
+                    <select id="ls-sort" className={`${input.live} cursor-pointer appearance-none pr-9`} defaultValue="category">
+                      <option value="category">By category</option>
+                      <option value="guest">By guest</option>
                       <option value="az">A to Z</option>
                     </select>
                     <span aria-hidden className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs">
@@ -305,170 +322,97 @@ export default function Showcase() {
                   </div>
                 </div>
                 <div className="sm:col-span-2">
-                  <label htmlFor="ls-note" className={`${label} mb-2 block`}>
-                    Anything I should know?
+                  <label htmlFor="ls-own" className={`${label} mb-2 block`}>
+                    Bringing something else?
                   </label>
-                  <input id="ls-note" aria-invalid="true" aria-describedby="ls-note-error" defaultValue="Allergic to" className={input.live} />
-                  <p id="ls-note-error" className="mt-2 text-sm text-ls-error">
-                    Tell me what you&rsquo;re allergic to so I can plan around it.
+                  <input id="ls-own" aria-invalid="true" aria-describedby="ls-own-error" defaultValue="Basil" className={input.live} />
+                  <p id="ls-own-error" className="mt-2 text-sm text-ls-error">
+                    Maya&rsquo;s already bringing basil. Try something new for the pool.
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
-                <fieldset>
-                  <legend className={`${label} mb-3`}>Dietary</legend>
-                  <div className="space-y-3 text-[15px]">
-                    <label className="flex cursor-pointer items-center gap-3">
-                      <input type="checkbox" className="ls-check" checked={veg} onChange={(e) => setVeg(e.target.checked)} />
-                      Vegetarian
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3">
-                      <input type="checkbox" className="ls-check" checked={noNuts} onChange={(e) => setNoNuts(e.target.checked)} />
-                      No nuts
-                    </label>
-                    <label className="flex items-center gap-3 text-ls-muted">
-                      <input type="checkbox" className="ls-check" disabled />
-                      Gluten-free (ask me)
-                    </label>
+              <div id="bring" className="scroll-mt-6">
+                <Caption>Tabs and list rows · ideas to bring</Caption>
+                <div className="mb-3 flex items-center justify-between gap-4">
+                  <p className={label}>
+                    You&rsquo;re bringing · {bringing.length} of {event.perGuest}
+                  </p>
+                  <div className="w-24">
+                    <Meter value={bringing.length} max={event.perGuest} />
                   </div>
-                </fieldset>
-                <fieldset>
-                  <legend className={`${label} mb-3`}>Portion</legend>
-                  <div className="space-y-3 text-[15px]">
-                    {[
-                      ["taste", "A taste"],
-                      ["full", "A full plate"],
-                    ].map(([v, l]) => (
-                      <label key={v} className="flex cursor-pointer items-center gap-3">
-                        <input type="radio" name="portion" className="ls-radio" value={v} checked={portion === v} onChange={() => setPortion(v)} />
-                        {l}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              </div>
-
-              <Toggle checked={seasonal} onChange={setSeasonal} labelText="Only show what's in season" />
-
-              <div>
-                <Caption>Tabs and list rows</Caption>
-                <div role="tablist" aria-label="Course" className="flex gap-6 border-b border-ls-border">
-                  {courses.map((c) => (
+                </div>
+                <div role="tablist" aria-label="Ingredient category" className="flex gap-5 overflow-x-auto border-b border-ls-border">
+                  {categories.map((c) => (
                     <button
                       key={c}
                       type="button"
                       role="tab"
-                      aria-selected={activeCourse === c}
-                      onClick={() => setActiveCourse(c)}
-                      className={tab.live}
+                      aria-selected={ideaTab === c}
+                      onClick={() => setIdeaTab(c)}
+                      className={`${tab.live} shrink-0`}
                     >
-                      {c}s
+                      {c}
                     </button>
                   ))}
                 </div>
                 <ul className="divide-y divide-ls-border border-b border-ls-border" role="tabpanel">
-                  {dishes
-                    .filter((d) => d.course === activeCourse)
-                    .map((d) => {
-                      const added = plate.includes(d.id);
+                  {event.ideas
+                    .filter((i) => i.category === ideaTab)
+                    .map((i) => {
+                      const on = bringing.includes(i.id);
                       return (
-                        <li key={d.id} className="flex items-center justify-between gap-4 py-3">
+                        <li key={i.id} className="flex items-center justify-between gap-4 py-3">
                           <div className="min-w-0">
-                            <p className="truncate text-[15px]">{d.name}</p>
-                            <p className="text-sm text-ls-muted">{d.tags.join(" · ")}</p>
+                            <p className="truncate text-[15px]">{i.name}</p>
+                            <p className="text-sm text-ls-muted">
+                              {i.vegetarian ? "Vegetarian" : "Meat & fish"}
+                              {i.nuts ? " · Contains nuts" : ""}
+                            </p>
                           </div>
                           <button
                             type="button"
-                            aria-pressed={added}
-                            aria-label={`${added ? "Remove" : "Add"} ${d.name}`}
-                            onClick={() => togglePlate(d.id)}
+                            aria-pressed={on}
+                            disabled={!on && full}
+                            aria-label={`${on ? "Stop bringing" : "Bring"} ${i.name}`}
+                            onClick={() => toggleBring(i.id)}
                             className={`${secondary.live} min-h-9 shrink-0 px-4`}
                           >
-                            {added ? "✓ Added" : "Add"}
+                            {on ? "✓ Bringing" : "Bring"}
                           </button>
                         </li>
                       );
                     })}
                 </ul>
+                {full && <p className="mt-2 text-sm text-ls-muted">That&rsquo;s your three. Remove one to swap it out.</p>}
               </div>
 
               <div>
-                <Caption>Filter chips</Caption>
-                <div className="flex flex-wrap gap-2">
-                  {filters.map((f) => (
-                    <button key={f} type="button" aria-pressed={activeFilters.includes(f)} onClick={() => toggleFilter(f)} className={chip.live}>
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Caption>Badges</Caption>
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone="solid">Guest favorite</Badge>
-                  <Badge>New</Badge>
-                  <Badge>In season</Badge>
-                  <Badge>Contains nuts</Badge>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-10">
-              <div>
-                <Caption>Dish card</Caption>
-                <article className="border border-ls-border bg-ls-surface">
-                  <Image
-                    src={featured.image.src}
-                    alt={featured.image.alt}
-                    width={featured.image.w}
-                    height={featured.image.h}
-                    sizes="(min-width: 1024px) 34rem, 100vw"
-                    className="aspect-[4/3] h-auto w-full object-cover"
-                  />
-                  <div className="space-y-3 p-5">
-                    <div className="flex items-center justify-between">
-                      <span className={`${label} text-ls-muted`}>{featured.course}</span>
-                      <Badge tone="solid">Guest favorite</Badge>
-                    </div>
-                    <h3 className="font-ls-serif text-[32px] leading-[1.2]">{featured.name}</h3>
-                    <p className="text-base leading-relaxed">{featured.description}</p>
-                    <div className="flex flex-wrap gap-3 pt-1">
-                      <button type="button" aria-pressed={plate.includes(featured.id)} onClick={() => togglePlate(featured.id)} className={primary.live}>
-                        {plate.includes(featured.id) ? "✓ On my plate" : "Add to my plate"}
-                      </button>
-                      <button type="button" onClick={() => dialogRef.current?.showModal()} className={secondary.live}>
-                        Details
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              </div>
-
-              <div>
-                <Caption>Your plate · tray</Caption>
+                <Caption>Tray · what you&rsquo;re bringing</Caption>
                 <div className="border border-ls-ink bg-ls-surface">
-                  <div className="flex items-baseline justify-between border-b border-ls-border px-5 py-4">
-                    <h3 className="font-ls-serif text-2xl">Your plate</h3>
-                    <span className="text-sm text-ls-muted">
-                      {plateDishes.length} {plateDishes.length === 1 ? "dish" : "dishes"}
-                    </span>
+                  <div className="space-y-3 border-b border-ls-border px-5 py-4">
+                    <div className="flex items-baseline justify-between">
+                      <h3 className="font-ls-serif text-2xl">What I&rsquo;m bringing</h3>
+                      <span className="text-sm text-ls-muted">
+                        {bringing.length} of {event.perGuest}
+                      </span>
+                    </div>
+                    <Meter value={bringing.length} max={event.perGuest} />
                   </div>
-                  {plateDishes.length === 0 ? (
-                    <p className="px-5 py-6 text-[15px] text-ls-muted">Nothing yet. Add a dish to start building your meal.</p>
+                  {mine.length === 0 ? (
+                    <p className="px-5 py-6 text-[15px] text-ls-muted">Nothing yet. Pick up to three ingredients to bring.</p>
                   ) : (
                     <ul className="divide-y divide-ls-border">
-                      {plateDishes.map((d) => (
-                        <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-3">
+                      {mine.map((i) => (
+                        <li key={i.id} className="flex items-center justify-between gap-4 px-5 py-3">
                           <div className="min-w-0">
-                            <p className="truncate text-[15px]">{d.name}</p>
-                            <p className="text-sm text-ls-muted">{d.course}</p>
+                            <p className="truncate text-[15px]">{i.name}</p>
+                            <p className="text-sm text-ls-muted">{i.category}</p>
                           </div>
                           <button
                             type="button"
-                            onClick={() => togglePlate(d.id)}
-                            aria-label={`Remove ${d.name}`}
+                            onClick={() => toggleBring(i.id)}
+                            aria-label={`Remove ${i.name}`}
                             className="grid size-9 shrink-0 cursor-pointer place-items-center text-xl leading-none hover:bg-ls-ink/[0.06] active:bg-ls-ink/[0.12] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ls-ink"
                           >
                             ×
@@ -478,12 +422,12 @@ export default function Showcase() {
                     </ul>
                   )}
                   <div className="border-t border-ls-border p-5">
-                    <button type="button" disabled={plateDishes.length === 0} onClick={() => setSent(true)} className={`${primary.live} w-full`}>
-                      Send my picks
+                    <button type="button" disabled={mine.length === 0} onClick={() => setConfirmed(true)} className={`${primary.live} w-full`}>
+                      Add mine to the pool
                     </button>
-                    {sent && (
+                    {confirmed && (
                       <p role="status" className="mt-3 text-sm text-ls-success">
-                        ✓ Got it. I&rsquo;ll start cooking.
+                        ✓ You&rsquo;re in. See you {event.date.split(",")[0]}.
                       </p>
                     )}
                   </div>
@@ -491,26 +435,162 @@ export default function Showcase() {
               </div>
 
               <div>
-                <Caption>Detail panel · opens as a modal from “Details”</Caption>
-                <div className="border border-ls-ink">
-                  <DishDetail dish={featured} onAdd={() => togglePlate(featured.id)} added={plate.includes(featured.id)} />
+                <Caption>Badges</Caption>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="solid">I&rsquo;ll provide</Badge>
+                  <Badge>You</Badge>
+                  <Badge>Vegetarian</Badge>
+                  <Badge>Contains nuts</Badge>
                 </div>
               </div>
+            </div>
+
+            {/* Right: the event, the pool, and building your creation */}
+            <div className="space-y-10">
+              <div>
+                <Caption>Event card</Caption>
+                <article className="border border-ls-border bg-ls-surface">
+                  <svg viewBox="0 0 240 36" className="block w-full border-b border-ls-border bg-ls-bg" aria-hidden="true">
+                    {Array.from({ length: 10 }, (_, i) => (
+                      <path key={i} d={`M${6 + i * 23.4} 36 V20 A9 9 0 0 1 ${24 + i * 23.4} 20 V36`} fill="none" stroke="#1C1D1F" strokeWidth="0.6" />
+                    ))}
+                  </svg>
+                  <div className="space-y-3 p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className={`${label} text-ls-muted`}>
+                        {event.date} · {event.time}
+                      </span>
+                      <Badge>Upcoming</Badge>
+                    </div>
+                    <h3 className="font-ls-serif text-[40px] leading-none">{event.theme}</h3>
+                    <dl className="grid grid-cols-[6rem_1fr] gap-y-1 text-[15px]">
+                      <dt className="text-ls-muted">I&rsquo;ll provide</dt>
+                      <dd>{event.base.join(" & ")}</dd>
+                      <dt className="text-ls-muted">You bring</dt>
+                      <dd>{event.perGuest} ingredients</dd>
+                      <dt className="text-ls-muted">The pool</dt>
+                      <dd>
+                        {pool.length} ingredients from {event.guests.length} guests
+                      </dd>
+                    </dl>
+                    <div className="flex flex-wrap gap-3 pt-1">
+                      <a href="#bring" className={primary.live}>
+                        Bring my three
+                      </a>
+                      <button type="button" onClick={openHow} className={secondary.live}>
+                        How it works
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div>
+                <Caption>Pool and builder · filter chips, checkboxes, radio, toggle</Caption>
+                <div className="border border-ls-ink bg-ls-surface">
+                  <div className="border-b border-ls-border px-5 py-4">
+                    <h3 className="font-ls-serif text-2xl">Build your creation</h3>
+                    <p className="text-sm text-ls-muted">Tap anything in tonight&rsquo;s pool to put it on your pizza.</p>
+                  </div>
+                  <div className="space-y-5 p-5">
+                    <div className="flex flex-wrap gap-2">
+                      {(["All", ...categories] as const).map((f) => (
+                        <button key={f} type="button" aria-pressed={poolFilter === f} onClick={() => setPoolFilter(f)} className={chip.live}>
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-3 text-[15px]">
+                      <label className="flex cursor-pointer items-center gap-3">
+                        <input type="checkbox" className="ls-check" checked={vegOnly} onChange={(e) => setVegOnly(e.target.checked)} />
+                        Vegetarian
+                      </label>
+                      <label className="flex cursor-pointer items-center gap-3">
+                        <input type="checkbox" className="ls-check" checked={noNuts} onChange={(e) => setNoNuts(e.target.checked)} />
+                        No nuts
+                      </label>
+                      <label className="flex items-center gap-3 text-ls-muted">
+                        <input type="checkbox" className="ls-check" disabled />
+                        Gluten-free dough (ask me)
+                      </label>
+                    </div>
+                    <Toggle checked={showNames} onChange={setShowNames} labelText="Show who brought what" />
+
+                    <p className="flex flex-wrap items-center gap-2 border-y border-dashed border-ls-border py-3 text-[15px]">
+                      <Badge tone="solid">On every pizza</Badge>
+                      {event.base.join(" & ")}
+                    </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
+                      {visiblePool.map((i) => (
+                        <li key={i.id}>
+                          <button type="button" aria-pressed={creation.includes(i.id)} onClick={() => toggleCreation(i.id)} className={chip.live}>
+                            {i.name}
+                            {showNames && <span className="text-[11px] opacity-70">· {i.broughtBy}</span>}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {visiblePool.length === 0 && <p className="text-sm text-ls-muted">Nothing in the pool matches. Try another filter.</p>}
+
+                    <fieldset>
+                      <legend className={`${label} mb-3`}>Crust</legend>
+                      <div className="flex gap-6 text-[15px]">
+                        {[
+                          ["thin", "Thin and crisp"],
+                          ["thick", "Thick and chewy"],
+                        ].map(([v, l]) => (
+                          <label key={v} className="flex cursor-pointer items-center gap-3">
+                            <input type="radio" name="crust" className="ls-radio" value={v} checked={crust === v} onChange={() => setCrust(v)} />
+                            {l}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                  </div>
+                  <div className="border-t border-ls-border p-5">
+                    <p className={`${label} text-ls-muted`}>Your creation · {crust === "thin" ? "thin crust" : "thick crust"}</p>
+                    <p className="mt-2 font-ls-serif text-2xl leading-snug">{creationNames.join(", ")}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Caption>Creation card · from past events</Caption>
+                <article className="grid border border-ls-border bg-ls-surface sm:grid-cols-[40%_1fr]">
+                  <Image
+                    src={pastCreation.image.src}
+                    alt={pastCreation.image.alt}
+                    width={pastCreation.image.w}
+                    height={pastCreation.image.h}
+                    sizes="(min-width: 1024px) 14rem, 100vw"
+                    className="aspect-[4/3] h-full w-full object-cover object-[50%_75%] sm:aspect-auto"
+                  />
+                  <div className="space-y-2 p-5">
+                    <span className={`${label} text-ls-muted`}>
+                      {pastCreation.event} · {pastCreation.year}
+                    </span>
+                    <h3 className="font-ls-serif text-[28px] leading-[1.15]">{pastCreation.name}</h3>
+                    <p className="text-sm text-ls-muted">Built by {pastCreation.builtBy} from {pastCreation.from.join(", ").toLowerCase()}</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <Caption>Modal · opens from “How it works”</Caption>
+            <div className="max-w-lg border border-ls-ink">
+              <HowItWorks />
             </div>
           </div>
 
           <dialog
             ref={dialogRef}
-            aria-label={featured.name}
+            aria-label="How it works"
             className="m-auto w-[min(32rem,calc(100vw-2rem))] border border-ls-ink bg-ls-surface p-0 text-ls-ink backdrop:bg-ls-ink/50"
             onClick={(e) => e.target === dialogRef.current && dialogRef.current.close()}
           >
-            <DishDetail
-              dish={featured}
-              onClose={() => dialogRef.current?.close()}
-              onAdd={() => togglePlate(featured.id)}
-              added={plate.includes(featured.id)}
-            />
+            <HowItWorks onClose={() => dialogRef.current?.close()} />
           </dialog>
         </Section>
 
@@ -528,10 +608,10 @@ export default function Showcase() {
                 </tr>
               </thead>
               <tbody className="align-middle">
-                <StateRow name="Primary" render={(s) => <span className={primary.state[s]}>{s === "selected" ? "✓ On my plate" : "Add"}</span>} />
-                <StateRow name="Secondary" render={(s) => <span className={secondary.state[s]}>{s === "selected" ? "✓ Added" : "Details"}</span>} />
-                <StateRow name="Filter chip" render={(s) => <span className={chip.state[s]}>Seafood</span>} />
-                <StateRow name="Tab" render={(s) => <span className={tab.state[s]}>Mains</span>} />
+                <StateRow name="Primary" render={(s) => <span className={primary.state[s]}>{s === "selected" ? "✓ In the pool" : "Add to pool"}</span>} />
+                <StateRow name="Secondary" render={(s) => <span className={secondary.state[s]}>{s === "selected" ? "✓ Bringing" : "Bring"}</span>} />
+                <StateRow name="Filter chip" render={(s) => <span className={chip.state[s]}>Burrata</span>} />
+                <StateRow name="Tab" render={(s) => <span className={tab.state[s]}>Cheese</span>} />
                 <StateRow
                   name="Text input"
                   render={(s) =>
@@ -541,30 +621,31 @@ export default function Showcase() {
               </tbody>
             </table>
           </div>
+          <p className="mt-4 text-sm text-ls-muted">
+            Disabled “Bring” is what you see once you&rsquo;ve claimed your three. Selected turns ink, so the blue always points to
+            the next step.
+          </p>
         </Section>
 
-        <section id="ui-states" className="border-t border-ls-ink pt-6 pb-14">
-          <h2 className={`${label} mb-8 flex gap-4`}>
-            <span className="text-ls-muted">06</span>UI states
-          </h2>
+        <Section n="06" title="UI states">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatePanel title="Empty">
               <span aria-hidden className="mx-auto block size-10 rounded-full border border-dashed border-ls-border" />
-              <p className="mt-4 font-ls-serif text-2xl">Your plate is empty</p>
-              <p className="mt-1 text-sm text-ls-muted">Pick a dish to start.</p>
+              <p className="mt-4 font-ls-serif text-2xl">The pool is empty</p>
+              <p className="mt-1 text-sm text-ls-muted">Be the first to bring something.</p>
             </StatePanel>
             <StatePanel title="Loading">
               <div className="h-px w-full overflow-hidden bg-ls-border">
                 <div className="ls-progress h-px w-2/5 bg-ls-ink" />
               </div>
               <p className="mt-5 font-ls-serif text-2xl">Setting the table…</p>
-              <p className="mt-1 text-sm text-ls-muted">Gathering tonight&rsquo;s dishes.</p>
+              <p className="mt-1 text-sm text-ls-muted">Gathering everyone&rsquo;s ingredients.</p>
             </StatePanel>
             <StatePanel title="Error">
               <span aria-hidden className="mx-auto grid size-10 place-items-center rounded-full border border-ls-error text-ls-error">
                 !
               </span>
-              <p className="mt-4 font-ls-serif text-2xl text-ls-error">Couldn&rsquo;t load the dishes</p>
+              <p className="mt-4 font-ls-serif text-2xl text-ls-error">Couldn&rsquo;t load the pool</p>
               <button type="button" className={`${secondary.live} mt-3 min-h-9 px-4`}>
                 Try again
               </button>
@@ -573,11 +654,11 @@ export default function Showcase() {
               <span aria-hidden className="mx-auto grid size-10 place-items-center rounded-full bg-ls-success text-ls-surface">
                 ✓
               </span>
-              <p className="mt-4 font-ls-serif text-2xl text-ls-success">Your picks are in</p>
-              <p className="mt-1 text-sm text-ls-muted">I&rsquo;ll start cooking.</p>
+              <p className="mt-4 font-ls-serif text-2xl text-ls-success">Your three are in</p>
+              <p className="mt-1 text-sm text-ls-muted">See you Saturday.</p>
             </StatePanel>
           </div>
-        </section>
+        </Section>
       </div>
     </main>
   );

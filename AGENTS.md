@@ -9,7 +9,7 @@ Due **Tuesday, October 13, 2026, 5:30 PM**. Submitted as a Vercel URL (the hub) 
 
 The site is a **personal culinary showcase** for dinner parties:
 - **Archive:** every dish the owner has cooked, with photos, notes, and tags (course, cuisine, season).
-- **Dinner party menu:** friends browse the dishes and pick what they'd like served at the next dinner.
+- **Themed potluck events:** friends see the next theme, claim the ingredients they'll bring, and build their own creation from the shared pool (see below).
 
 **Audience:** the owner's friends and dinner guests, mostly opening a shared link on their phones.
 
@@ -18,6 +18,19 @@ The host provides an exceptional platform; **the guest is the final chef**. Gues
 - **Tone:** warm, casual, and guest-centered. Never pretentious: no tasting-menu or fine-dining language ("seven courses," "served in order," French/Italian course names like *Primi*), and no telling guests how to eat.
 - **Voice:** speak to the guest ("you pick," "your plate"). The host's role is to set things up and cook ("I'll cook it").
 - **UX:** choice and control come first. Selecting, combining, and building a meal is the main interaction, not passively browsing a fixed menu.
+
+### How the events work (the site should model this)
+Each event has a **theme**, and it's a potluck of ingredients, not of finished dishes:
+1. **The host picks a theme and provides the base.** Example: *Pizza night*. The host supplies the dough and sauce.
+2. **Each guest brings ingredients.** Example: 3 toppings per guest.
+3. **Everything goes into a shared pool.** At the event, anyone can mix and match from everything everyone brought.
+4. **Each guest builds their own creation** from the base and the pool. Every plate is different.
+
+What this means for the site:
+- **Content model:** an *event* has a theme, a date, a host-provided base, a per-guest ingredient count, and the guests' contributed ingredients. Past events in the archive show the theme and what people made.
+- **Main interactions** (all faked in the browser): (a) a guest **claims the ingredients they'll bring** (up to the limit, e.g. 3) and sees the shared pool grow; (b) a guest **builds their creation** from the base and the pool.
+- **Language:** "bring," "pool," "build," "your creation." The host's role is "I'll provide the dough and sauce," never "I'll cook your order."
+- The Line & Stone design system already follows this model (`lib/events.ts`: claim up to 3 → pool → build). New design systems should use the same components and data.
 
 ## How we work (important)
 
@@ -30,7 +43,7 @@ The host provides an exceptional platform; **the guest is the final chef**. Gues
 ## Tech stack (hard constraints)
 
 - **Next.js (App Router) + Tailwind CSS**, as a static site deployed on **Vercel Hobby**.
-- **No database, accounts, auth, external APIs, or data storage.** All data lives in local files (e.g. `data/dishes.ts`), and images live in `public/`.
+- **No database, accounts, auth, external APIs, or data storage.** All data lives in local files (e.g. `lib/events.ts`), and images live in `public/`.
 - Interactions are **faked in the browser** with React state. Nothing persists, so no `localStorage`-backed "votes" or server actions.
 - **Don't add packages unless they're clearly needed.** Ask first. Avoid UI kits (shadcn, MUI, etc.) because the components should come from our own design systems.
 
@@ -71,14 +84,14 @@ Board data and palettes live in `lib/mood-boards.ts`; each board is 23 photos + 
 
 ### 3. Design systems (`/design-systems/[style]`)
 Status: **Line & Stone done** (`app/design-systems/line-and-stone/`). Trailhead and Candlelit Table not started.
-Shared pieces: color tokens in `app/globals.css` (`--color-ls-*` → `bg-ls-bg`, `text-ls-ink`, …), fonts in `lib/fonts.ts`, component class strings with live and per-state variants in `components/line-and-stone/styles.ts`, dish data in `lib/dishes.ts`, contrast math in `lib/contrast.ts`. Reuse these for the site; don't duplicate tokens.
+Shared pieces: color tokens in `app/globals.css` (`--color-ls-*` → `bg-ls-bg`, `text-ls-ink`, …), fonts in `lib/fonts.ts`, component class strings with live and per-state variants in `components/line-and-stone/styles.ts`, event data (base, pool, ideas) in `lib/events.ts`, contrast math in `lib/contrast.ts`. Reuse these for the site; don't duplicate tokens.
 Tailwind v4 gotcha: `outline-none` also cancels `focus-visible:outline-2`. Pair focus rings with `focus-visible:outline-solid`.
 
 Each is a UI library built from its mood board, using **culinary content** (real dish names, not lorem ipsum). Each includes:
 1. **Color roles:** background, surface, text, muted text, border, and accent, **with contrast ratios** shown (text and muted text must be ≥ 4.5:1 on background)
-2. **Type roles:** display, heading, body, and label, with sizes and weights, set in real content (e.g. "12 dishes this season")
+2. **Type roles:** display, heading, body, and label, with sizes and weights, set in real content (e.g. "14 ingredients in the pool")
 3. **Spacing and shape:** a spacing scale (e.g. 4/8/12/16/24/32), corner radii, borders, and the shadow approach
-4. **Components:** primary and secondary buttons, a link, a text input, a select, a checkbox, a radio, a toggle, tabs, filter chips, a dish card, list rows, a badge, a modal or detail panel, plus anything the site needs (e.g. a "pick for dinner" control, a selected-dishes tray)
+4. **Components:** primary and secondary buttons, a link, a text input, a select, a checkbox, a radio, a toggle, tabs, filter chips, an event card, list rows, a badge, a modal or detail panel, plus anything the site needs (e.g. a "bring this" control, a what-I'm-bringing tray, the shared pool, a creation builder)
 5. **Control states:** rest, hover, focus, pressed, selected, and disabled, shown side by side
 6. **UI states:** empty, loading, error, and success
 
@@ -88,11 +101,11 @@ Keep each style's tokens (colors, fonts, radii) in one place per style so the de
 Built in the **one style the user picks**, using that style's design-system components. Requirements:
 1. **Thoughtful visual hierarchy:** it's clear what to look at first
 2. **At least two faked interactions.** Candidates:
-   - filter chips by course, cuisine, or season
-   - a dish detail panel or modal (photo, story, ingredients, date first made)
-   - "add to dinner menu" selection with a running tray/summary that guests can review (not saved)
+   - claim up to 3 ingredients to bring, with a running "What I'm bringing" tray and a pool that grows (not saved)
+   - build your creation: tap pool ingredients onto your pizza, filtered by category or diet
+   - a past-events archive with creation detail (photo, who built it, from what)
 3. **Every control in all its states** (hover, focus-visible, pressed, selected, disabled)
-4. **The accent color is reserved for the primary action** (e.g. "Pick this dish" / "Send my picks")
+4. **The accent color is reserved for the primary action** (e.g. "Bring this" / "Add mine to the pool")
 5. **Responsive:** test at **390px mobile** and **1440px desktop**
 
 ## Design requirements (checklist for every change)
@@ -124,8 +137,8 @@ Keep a running log the user can use to prepare for the in-class explanation. For
 
 ## Content
 
-- Dish data in `data/dishes.ts`: `id`, `name`, `course` (starter/main/dessert/drink), `cuisine`, `season`, `description`, `image`, `dateFirstMade`, `tags`, and optionally `story` or `notes`
-- Use the user's real dishes and photos when they're provided. Use clearly marked placeholders until then.
+- Event data in `lib/events.ts`: each event has `theme`, `date`, `base` (host provides), `perGuest`, `guests`, `pool` (claimed ingredients with `broughtBy`), and `ideas` (unclaimed suggestions). Past creations feed the archive.
+- Use the user's real events, guests, and photos when they're provided. Guest names and contributions are placeholders until then.
 - Optimize images with `next/image` and keep the files reasonably small for the Vercel Hobby plan
 
 <!-- BEGIN:nextjs-agent-rules -->
