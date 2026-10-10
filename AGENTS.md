@@ -57,7 +57,7 @@ What this means for the site:
 /                              Hub (homepage, the submitted URL)
 /mood-boards/[style]           3 mood boards
 /design-systems/[style]        3 design systems, one per mood board
-/<site-route>                  The culinary site, e.g. /kitchen or /supper-club (name TBD)
+/phamtastic-lab                The culinary site: "The Phamtastic Culinary Lab"
 ```
 
 ### 1. Hub (`/`)
@@ -102,7 +102,8 @@ Each is a UI library built from its mood board, using **culinary content** (real
 
 Keep each style's tokens (colors, fonts, radii) in one place per style so the design system and the site share them.
 
-### 4. The site (`/<site-route>`)
+### 4. The site (`/phamtastic-lab`)
+**Name: The Phamtastic Culinary Lab. Style chosen: Line & Stone.** One scrolling page: hero (next lab night) → 01 Bring → 02 Learn → 03 Build → Past nights archive (creation detail modal). Code in `app/phamtastic-lab/lab.tsx`; shared pieces in `components/line-and-stone/ui.tsx`.
 Built in the **one style the user picks**, using that style's design-system components. Requirements:
 1. **Thoughtful visual hierarchy:** it's clear what to look at first
 2. **At least two faked interactions.** Candidates:

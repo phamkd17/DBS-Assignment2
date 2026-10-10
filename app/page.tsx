@@ -67,6 +67,20 @@ export default function Hub() {
           ))}
         </ul>
       </section>
+
+      <section className="mt-12">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">3 · Your Site</h2>
+        <Link
+          href="/phamtastic-lab"
+          className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-neutral-900 bg-neutral-900 p-6 text-white transition-colors hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 active:bg-neutral-800"
+        >
+          <span>
+            <span className={`${instrumentSerif.className} block text-3xl leading-none`}>The Phamtastic Culinary Lab</span>
+            <span className="mt-2 block text-sm text-neutral-300">Built in Line &amp; Stone · bring, learn, build</span>
+          </span>
+          <span className="text-sm font-medium">Open →</span>
+        </Link>
+      </section>
     </main>
   );
 }

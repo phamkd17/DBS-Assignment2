@@ -135,3 +135,65 @@ export const pastCreation = {
   from: ["Farfalle", "Garden herbs", "Chili flakes", "Parmesan"],
   image: { src: "/mood-boards/candlelit-table/card.jpg", w: 750, h: 1000, alt: "Farfalle with herbs and shaved parmesan" },
 };
+
+// Past lab nights for the archive. Photos are the owner's; themes, guests, and lessons are
+// placeholders until the owner fills in what really happened.
+export type Creation = {
+  id: string;
+  name: string;
+  builtBy: string;
+  from: string[];
+  image: { src: string; w: number; h: number; alt: string };
+};
+
+export type PastNight = {
+  id: string;
+  theme: string;
+  date: string;
+  lesson: string; // the food-science idea taught that night
+  creations: Creation[];
+};
+
+const photo = (file: string, alt: string, w = 1013, h = 1350) => ({ src: `/mood-boards/candlelit-table/${file}`, w, h, alt });
+
+export const pastNights: PastNight[] = [
+  {
+    id: "dessert-night",
+    theme: "Dessert night",
+    date: "March 2024",
+    lesson: "Sugar caramelizes around 340°F. Go darker for bitterness, lighter for sweetness.",
+    creations: [
+      { id: "creme-caramel", name: "Crème caramel", builtBy: "Leo", from: ["Custard base", "Dark caramel", "Vanilla"], image: photo("01.jpg", "Crème caramel on a navy-rimmed plate", 1012, 1350) },
+      { id: "flambe", name: "Flambéed meringue", builtBy: "Maya", from: ["Meringue", "Rum", "Berry sauce"], image: photo("21.jpg", "Dessert flambéed with a blue flame") },
+    ],
+  },
+  {
+    id: "seafood-night",
+    theme: "Seafood night",
+    date: "September 2023",
+    lesson: "Fish proteins set gently. Pull it off the heat early and let carryover cooking finish the job.",
+    creations: [
+      { id: "salmon", name: "Seared salmon, herb sauce", builtBy: "Jordan", from: ["Salmon", "Herb sauce", "Asparagus"], image: photo("12.jpg", "Seared salmon over herb sauce with asparagus") },
+      { id: "squid-ink", name: "Squid-ink noodles, white fish", builtBy: "Sam", from: ["Squid-ink noodles", "White fish", "Broth"], image: photo("14.jpg", "Fish over squid-ink noodles in broth") },
+    ],
+  },
+  {
+    id: "oyster-night",
+    theme: "Oyster night",
+    date: "November 2022",
+    lesson: "Acid and salt wake up briny flavors. A little mignonette goes a long way.",
+    creations: [
+      { id: "baked-oysters", name: "Baked oysters, garlic butter", builtBy: "Priya", from: ["Oysters", "Garlic butter", "Breadcrumbs"], image: photo("05.jpg", "Baked oysters arranged around a scoop of butter") },
+      { id: "raw-oysters", name: "Oysters, mignonette", builtBy: "You", from: ["Oysters", "Shallot", "Vinegar"], image: photo("09.jpg", "Oysters on ice with mignonette") },
+    ],
+  },
+  {
+    id: "pasta-night",
+    theme: "Pasta night",
+    date: "November 2021",
+    lesson: "Starchy pasta water is an emulsifier. It turns butter and cheese into a glossy sauce.",
+    creations: [
+      { id: "farfalle", name: "Farfalle, herbs & parmesan", builtBy: "Priya", from: ["Farfalle", "Garden herbs", "Chili flakes", "Parmesan"], image: { src: "/mood-boards/candlelit-table/card.jpg", w: 750, h: 1000, alt: "Farfalle with herbs and shaved parmesan" } },
+    ],
+  },
+];
