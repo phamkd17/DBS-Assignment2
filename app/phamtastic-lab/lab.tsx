@@ -343,12 +343,29 @@ export default function Lab() {
         <Step id="build" n="03" title="Build" intro="Tap anything in tonight’s pool to put it on your pizza. I’ll sort out what goes in the oven and what goes on after.">
           <div className="grid gap-10 lg:grid-cols-[1fr_24rem]">
             <div className="space-y-6">
-              <div className="flex flex-wrap gap-2" aria-label="Filter the pool">
-                {(["All", ...categories] as const).map((f) => (
-                  <button key={f} type="button" aria-pressed={p.poolFilter === f} onClick={() => p.setPoolFilter(f)} className={chip.live}>
-                    {f}
-                  </button>
-                ))}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter the pool by category">
+                  <span className={`${label} w-full shrink-0 text-ls-muted sm:w-20`}>Category</span>
+                  {(["All", ...categories] as const).map((f) => (
+                    <button key={f} type="button" aria-pressed={p.poolFilter === f} onClick={() => p.setPoolFilter(f)} className={chip.live}>
+                      {f}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter the pool by taste">
+                  <span className={`${label} w-full shrink-0 text-ls-muted sm:w-20`}>Taste</span>
+                  {tastes.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      aria-pressed={p.tasteFilter === t}
+                      onClick={() => p.setTasteFilter(p.tasteFilter === t ? null : t)}
+                      className={chip.live}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-3 text-[15px]">
                 <label className="flex cursor-pointer items-center gap-3">
@@ -406,7 +423,21 @@ export default function Lab() {
                     </li>
                   ))}
                 </ul>
-                {p.visiblePool.length === 0 && <p className="text-sm text-ls-muted">Nothing in the pool matches. Try another filter.</p>}
+                {p.visiblePool.length === 0 && (
+                    <p className="text-sm text-ls-muted">
+                      Nothing in the pool matches.{" "}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          p.setPoolFilter("All");
+                          p.setTasteFilter(null);
+                        }}
+                        className="cursor-pointer underline underline-offset-4 hover:text-ls-ink focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ls-ink"
+                      >
+                        Clear filters
+                      </button>
+                    </p>
+                  )}
               </div>
 
               <fieldset>

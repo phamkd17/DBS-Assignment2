@@ -44,7 +44,7 @@ const tasteColors: Record<string, string> = {
   Salty: "bg-th-sky",
   Sweet: "bg-th-accent",
   Sour: "bg-th-selected",
-  Heat: "bg-th-canyon",
+  Spicy: "bg-th-canyon",
   Umami: "bg-th-lagoon",
 };
 

@@ -20,8 +20,8 @@ export const ingredientName = (id: string) => allIngredients.find((i) => i.id ==
 /** A gentle, never-judging nudge based on the tastes on the plate. */
 export function balanceNote(count: Record<Taste, number>) {
   if (count.Salty === 0) return "Nothing salty yet. A salty cheese, olives, or cured meat would wake it up.";
-  if (count.Sweet >= 2 && count.Heat === 0) return "Sweet with no heat. A little spice would play against it.";
-  if (count.Umami >= 3 && count.Sour + count.Heat <= 1) return "Lots of umami. Something sour or spicy keeps every bite interesting.";
+  if (count.Sweet >= 2 && count.Spicy === 0) return "Sweet with no spice. A little heat would play against it.";
+  if (count.Umami >= 3 && count.Sour + count.Spicy <= 1) return "Lots of umami. Something sour or spicy keeps every bite interesting.";
   if (count.Umami === 0) return "No umami yet. Mushrooms, aged cheese, or cured meat would add savory depth.";
   return "Nicely balanced. It's yours, so trust your palate.";
 }
@@ -31,6 +31,7 @@ export function usePotluck() {
   const [confirmed, setConfirmed] = useState(false);
   const [ideaTab, setIdeaTab] = useState<Category>("Cheese");
   const [poolFilter, setPoolFilter] = useState<Category | "All">("All");
+  const [tasteFilter, setTasteFilter] = useState<Taste | null>(null);
   const [creation, setCreation] = useState<string[]>(["mozzarella", "basil"]);
   const [showNames, setShowNames] = useState(true);
   const [vegOnly, setVegOnly] = useState(false);
@@ -45,7 +46,9 @@ export function usePotluck() {
   const mine: Ingredient[] = bringing.map((id) => ({ ...claimable.find((i) => i.id === id)!, broughtBy: "You" }));
   const pool: Ingredient[] = [...event.pool, ...mine];
   const fitsDiet = (i: Ingredient) => (!vegOnly || i.vegetarian) && (!noNuts || !i.nuts);
-  const visiblePool = pool.filter((i) => (poolFilter === "All" || i.category === poolFilter) && fitsDiet(i));
+  const visiblePool = pool.filter(
+    (i) => (poolFilter === "All" || i.category === poolFilter) && (!tasteFilter || (i.tastes ?? []).includes(tasteFilter)) && fitsDiet(i),
+  );
 
   const onPizza = pool.filter((i) => creation.includes(i.id) && fitsDiet(i));
   const intoOven = [...event.base.filter((b) => baseOn.includes(b)), ...onPizza.filter((i) => !i.after).map((i) => i.name)];
@@ -100,6 +103,8 @@ export function usePotluck() {
     ideaTab,
     setIdeaTab,
     poolFilter,
+    tasteFilter,
+    setTasteFilter,
     setPoolFilter,
     creation,
     toggleCreation,

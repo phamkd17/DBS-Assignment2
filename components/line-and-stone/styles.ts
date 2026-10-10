@@ -41,7 +41,7 @@ const chipBase =
   "inline-flex min-h-9 items-center gap-1.5 border px-3.5 font-ls-sans text-[13px] transition-colors duration-150 select-none cursor-pointer";
 
 export const chip = {
-  live: `${chipBase} ${focusRing} border-ls-ink bg-ls-surface text-ls-ink hover:bg-[color-mix(in_srgb,var(--color-ls-ink)_6%,var(--color-ls-surface))] active:bg-[color-mix(in_srgb,var(--color-ls-ink)_12%,var(--color-ls-surface))] aria-pressed:bg-ls-ink aria-pressed:text-ls-surface disabled:cursor-not-allowed disabled:border-ls-border disabled:bg-ls-disabled disabled:text-ls-muted`,
+  live: `${chipBase} ${focusRing} border-ls-ink bg-ls-surface text-ls-ink hover:bg-[color-mix(in_srgb,var(--color-ls-ink)_6%,var(--color-ls-surface))] active:bg-[color-mix(in_srgb,var(--color-ls-ink)_12%,var(--color-ls-surface))] aria-pressed:bg-ls-ink aria-pressed:text-ls-surface aria-pressed:hover:bg-ls-ink aria-pressed:active:bg-ls-ink disabled:cursor-not-allowed disabled:border-ls-border disabled:bg-ls-disabled disabled:text-ls-muted`,
   state: {
     rest: `${chipBase} border-ls-ink bg-ls-surface text-ls-ink`,
     hover: `${chipBase} border-ls-ink bg-[color-mix(in_srgb,var(--color-ls-ink)_6%,var(--color-ls-surface))] text-ls-ink`,
