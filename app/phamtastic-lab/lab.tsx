@@ -381,25 +381,33 @@ export default function Lab() {
                       ))}
                     </ul>
                   </div>
-              <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
-                {p.visiblePool.map((i) => (
-                  <li key={i.id}>
-                    <button
-                      type="button"
-                      aria-pressed={p.creation.includes(i.id)}
-                      onClick={() => {
-                        setSaved(false);
-                        p.toggleCreation(i.id);
-                      }}
-                      className={`${chip.live} min-h-11 text-[15px]`}
-                    >
-                      {i.name}
-                      {p.showNames && <span className="text-[11px] opacity-70">· {i.broughtBy}</span>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              {p.visiblePool.length === 0 && <p className="text-sm text-ls-muted">Nothing in the pool matches. Try another filter.</p>}
+              <div className="space-y-2">
+                <p className="flex flex-wrap items-center gap-2 text-sm">
+                  <Badge tone="outline">The pool</Badge>
+                  <span className="opacity-80">
+                    Everything guests brought, {p.pool.length} so far. Take anything.
+                  </span>
+                </p>
+                <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
+                  {p.visiblePool.map((i) => (
+                    <li key={i.id}>
+                      <button
+                        type="button"
+                        aria-pressed={p.creation.includes(i.id)}
+                        onClick={() => {
+                          setSaved(false);
+                          p.toggleCreation(i.id);
+                        }}
+                        className={`${chip.live} min-h-11 text-[15px]`}
+                      >
+                        {i.name}
+                        {p.showNames && <span className="text-[11px] opacity-70">· {i.broughtBy}</span>}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {p.visiblePool.length === 0 && <p className="text-sm text-ls-muted">Nothing in the pool matches. Try another filter.</p>}
+              </div>
 
               <fieldset>
                 <legend className={`${label} mb-3`}>Crust</legend>

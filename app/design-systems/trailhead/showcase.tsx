@@ -609,18 +609,26 @@ export default function Showcase() {
                       ))}
                     </ul>
                   </div>
-                  <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
-                    {p.visiblePool.map((i) => (
-                      <li key={i.id}>
-                        <button type="button" aria-pressed={p.creation.includes(i.id)} onClick={() => p.toggleCreation(i.id)} className={chip.live}>
-                          {p.creation.includes(i.id) ? "✓ " : ""}
-                          {i.name}
-                          {p.showNames && <span className="text-xs font-medium text-th-muted">{i.broughtBy}</span>}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  {p.visiblePool.length === 0 && <p className="text-sm text-th-muted">Nothing in the pool matches. Try another filter.</p>}
+                  <div className="space-y-2">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge tone="lime">The pool</Badge>
+                      <span className="opacity-80">
+                        Everything guests brought, {p.pool.length} so far. Take anything.
+                      </span>
+                    </p>
+                    <ul className="flex flex-wrap gap-2" aria-label="Tonight's pool">
+                      {p.visiblePool.map((i) => (
+                        <li key={i.id}>
+                          <button type="button" aria-pressed={p.creation.includes(i.id)} onClick={() => p.toggleCreation(i.id)} className={chip.live}>
+                            {p.creation.includes(i.id) ? "✓ " : ""}
+                            {i.name}
+                            {p.showNames && <span className="text-xs font-medium text-th-muted">{i.broughtBy}</span>}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {p.visiblePool.length === 0 && <p className="text-sm text-th-muted">Nothing in the pool matches. Try another filter.</p>}
+                  </div>
 
                   <fieldset>
                     <legend className={`${label} mb-3`}>Crust</legend>
