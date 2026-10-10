@@ -64,12 +64,11 @@ const generated = {
       theme={theme}
       className="aspect-square"
       style={{
-        background: c.Fern,
-        backgroundImage: `repeating-radial-gradient(circle at 30% 70%, transparent 0 14px, ${c.Anemone}99 14px 16px), repeating-radial-gradient(circle at 85% 15%, transparent 0 18px, ${c.Anemone}55 18px 19px)`,
+        background: `repeating-linear-gradient(105deg, transparent 0 11px, ${c.Cloud}2E 11px 12px, transparent 12px 23px, ${c.Cloud}1A 23px 24px), linear-gradient(180deg, ${c.Lagoon} 0%, #0D3B40 60%, ${c.Basalt} 100%)`,
       }}
     >
       <span className="absolute bottom-3 left-4 text-xs font-medium" style={{ color: c.Cloud }}>
-        Texture · contour lines
+        Texture · rain
       </span>
     </Generated>
   ),
@@ -85,7 +84,7 @@ const generated = {
         className="block rounded-full border-2 px-5 py-3 text-center text-sm font-semibold"
         style={{ borderColor: c.Basalt, color: c.Basalt }}
       >
-        See the menu
+        Build my plate
       </span>
       <div className="flex flex-wrap gap-2 pt-1">
         {["Starters", "Mains", "Dessert"].map((label, i) => (

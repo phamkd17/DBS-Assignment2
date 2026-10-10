@@ -51,7 +51,7 @@ export const trailhead: MoodBoard = {
     p45("18.jpg", "Red volcanic crater slopes at dawn"),
     p45("19.jpg", "Jungle stream and boulders beneath red cliffs"),
     p45("20.jpg", "Jagged coastline glowing pink at sunset"),
-    p45("21.jpg", "Aerial view of waterfalls threading through jungle"),
+    { file: "21.jpg", w: 1080, h: 864, alt: "Storm clouds and a rainbow over misty mountains" },
     p45("22.jpg", "Green fluted ridges meeting white surf"),
     { file: "23.jpg", w: 1080, h: 864, alt: "Aerial view of a turquoise bay below mountains" },
   ],

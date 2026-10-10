@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Fraunces, Figtree } from "next/font/google";
 import { Board, Generated, type Theme } from "../_components/board";
-import { candlelitTable as board, photoSrc } from "@/lib/mood-boards";
+import { candlelitTable as board } from "@/lib/mood-boards";
 
 const display = Fraunces({ subsets: ["latin"], style: ["normal", "italic"], weight: ["400", "600"] });
 const body = Figtree({ subsets: ["latin"] });
@@ -22,21 +22,27 @@ const theme: Theme = {
   titleClass: "text-6xl italic sm:text-8xl",
 };
 
-const flan = board.photos[0];
+// Card photo is kept outside board.photos so it does not repeat a board photo.
+const cardPhoto = { src: "/mood-boards/candlelit-table/card.jpg", w: 750, h: 1000 };
 
 const generated = {
   1: (
-    <Generated theme={theme} className="p-5" style={{ background: c.Walnut }}>
-      <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+    <Generated theme={theme} className="p-5" style={{ background: "#2A1E17" }}>
+      <div className="grid grid-cols-1 gap-x-2 gap-y-3 xl:grid-cols-2">
         {board.palette.map((s) => (
-          <div key={s.hex} className="text-center">
+          <div key={s.hex} className="flex min-w-0 items-center gap-2.5">
             <div
-              className="mx-auto aspect-square w-full rounded-full"
-              style={{ background: s.hex, boxShadow: `0 0 0 3px ${c.Cream}22` }}
+              className="size-8 shrink-0 rounded-full"
+              style={{ background: s.hex, boxShadow: `0 0 0 2px ${c.Cream}33` }}
             />
-            <p className="mt-1.5 text-[11px]" style={{ color: c.Cream }}>
-              {s.name}
-            </p>
+            <div className="min-w-0 leading-tight">
+              <p className="truncate text-[11px]" style={{ color: c.Cream }}>
+                {s.name}
+              </p>
+              <p className="text-[10px]" style={{ color: "#CBB89A" }}>
+                {s.hex}
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -109,10 +115,10 @@ const generated = {
   22: (
     <Generated theme={theme} style={{ background: c.Cream, color: c.Espresso }}>
       <Image
-        src={photoSrc(board, flan)}
+        src={cardPhoto.src}
         alt=""
-        width={flan.w}
-        height={flan.h}
+        width={cardPhoto.w}
+        height={cardPhoto.h}
         sizes="(min-width: 1024px) 20vw, 50vw"
         className="block aspect-[4/3] h-auto w-full object-cover"
       />
@@ -123,9 +129,9 @@ const generated = {
         >
           Guest favorite
         </span>
-        <p className={`${display.className} mt-2 text-xl`}>Crème caramel</p>
+        <p className={`${display.className} mt-2 text-xl`}>Farfalle, herbs &amp; parmesan</p>
         <p className="text-sm" style={{ color: c.Walnut }}>
-          Dessert · served since 2021
+          Main · served since 2021
         </p>
       </div>
     </Generated>
