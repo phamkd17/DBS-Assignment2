@@ -293,3 +293,17 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ct-flicker { animation: none; }
 }
+
+/* Horizontally scrollable rows (tabs, chip strips) that hide their scrollbar. */
+@utility scroll-row {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Draw focus rings inside the item so the hidden overflow doesn't clip them. */
+  & > :focus-visible {
+    outline-offset: -3px !important;
+  }
+}

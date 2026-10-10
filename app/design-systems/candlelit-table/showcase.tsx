@@ -378,7 +378,7 @@ export default function Showcase() {
                   <Candles value={p.bringing.length} max={p.event.perGuest} />
                 </div>
                 <div className="px-6 pt-2 pb-5">
-                  <div role="tablist" aria-label="Ingredient category" className="flex gap-5 overflow-x-auto border-b border-ct-hairline">
+                  <div role="tablist" aria-label="Ingredient category" className="flex gap-5 scroll-row border-b border-ct-hairline">
                     {categories.map((c) => (
                       <button key={c} type="button" role="tab" aria-selected={p.ideaTab === c} onClick={() => p.setIdeaTab(c)} className={`${tab.live} shrink-0`}>
                         {c}

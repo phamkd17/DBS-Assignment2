@@ -237,7 +237,7 @@ export default function Showcase() {
                     <Meter value={bringing.length} max={event.perGuest} />
                   </div>
                 </div>
-                <div role="tablist" aria-label="Ingredient category" className="flex gap-5 overflow-x-auto border-b border-ls-border">
+                <div role="tablist" aria-label="Ingredient category" className="flex gap-5 scroll-row border-b border-ls-border">
                   {categories.map((c) => (
                     <button
                       key={c}

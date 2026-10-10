@@ -163,7 +163,7 @@ function Lessons({ poolIds }: { poolIds: string[] }) {
           {seen.length} of {lessons.length} read
         </p>
       </div>
-      <div className="flex gap-2 overflow-x-auto border-b-2 border-th-ink p-3" role="list">
+      <div className="scroll-row flex gap-2 border-b-2 border-th-ink p-3" role="list">
         {lessons.map((l, i) => (
           <button
             key={l.id}
@@ -432,7 +432,7 @@ export default function Showcase() {
                 </div>
                 <div className="p-4">
                   <Caption>Tabs and list rows</Caption>
-                  <div role="tablist" aria-label="Ingredient category" className="flex gap-1 overflow-x-auto rounded-full border-2 border-th-ink bg-th-bg p-1">
+                  <div role="tablist" aria-label="Ingredient category" className="flex gap-1 scroll-row rounded-full border-2 border-th-ink bg-th-bg p-1">
                     {categories.map((c) => (
                       <button key={c} type="button" role="tab" aria-selected={p.ideaTab === c} onClick={() => p.setIdeaTab(c)} className={`${tab.live} shrink-0`}>
                         {c}
