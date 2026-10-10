@@ -81,7 +81,7 @@ function useActiveSection(ids: string[]) {
 const sectionIds = nav.map(([, , href]) => href.slice(1));
 
 export default function Lab() {
-  const p = usePotluck();
+  const p = usePotluck({ startEmpty: true });
   const active = useActiveSection(sectionIds);
   const [ownName, setOwnName] = useState("");
   const [ownCategory, setOwnCategory] = useState<Category>("Produce");
@@ -169,7 +169,7 @@ export default function Lab() {
           <Arcade className="mt-14 h-10 sm:h-14" stroke="#A8A196" />
         </section>
 
-        <Step id="bring" n="01" title="Bring" intro="Claim three ingredients so we don’t double up. Everything you bring goes into a shared pool that anyone can use.">
+        <Step id="bring" n="01" title="Bring" intro="Tell me the three ingredients you’ll bring so we don’t double up. Everything goes into a shared pool that anyone can use.">
           <div className="grid gap-10 lg:grid-cols-[1fr_24rem]">
             <div>
               <div className="mb-3 flex items-center justify-between gap-4">
@@ -180,47 +180,9 @@ export default function Lab() {
                   <Meter value={p.bringing.length} max={p.event.perGuest} />
                 </div>
               </div>
-              <div role="tablist" aria-label="Ingredient category" className="flex gap-5 scroll-row border-b border-ls-border">
-                {categories.map((c) => (
-                  <button key={c} type="button" role="tab" aria-selected={p.ideaTab === c} onClick={() => p.setIdeaTab(c)} className={`${tab.live} shrink-0`}>
-                    {c}
-                  </button>
-                ))}
-              </div>
-              <ul className="divide-y divide-ls-border border-b border-ls-border" role="tabpanel">
-                {p.event.ideas
-                  .filter((i) => i.category === p.ideaTab)
-                  .map((i) => {
-                    const on = p.bringing.includes(i.id);
-                    return (
-                      <li key={i.id} className="flex items-center justify-between gap-4 py-4">
-                        <div className="min-w-0">
-                          <p className="text-[17px]">{i.name}</p>
-                          <p className="text-sm text-ls-muted">
-                            {i.vegetarian ? "Vegetarian" : "Meat & fish"}
-                            {i.nuts ? " · Contains nuts" : ""}
-                            {i.after ? " · Goes on after the bake" : ""}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          aria-pressed={on}
-                          disabled={!on && p.full}
-                          aria-label={`${on ? "Stop bringing" : "Bring"} ${i.name}`}
-                          onClick={() => p.toggleBring(i.id)}
-                          className={`${secondary.live} min-h-10 shrink-0 px-4`}
-                        >
-                          {on ? "✓ Bringing" : "Bring"}
-                        </button>
-                      </li>
-                    );
-                  })}
-              </ul>
-              {p.full && <p className="mt-3 text-sm text-ls-muted">That&rsquo;s your three. Remove one to swap it out.</p>}
-
-              <form onSubmit={submitOwn} className="mt-8 border border-ls-border bg-ls-surface p-5" noValidate>
-                <p className="font-ls-serif text-2xl">Bringing something else?</p>
-                <p className="mt-1 text-sm text-ls-muted">Add your own ingredient. It counts toward your three and goes straight into the pool.</p>
+              <form onSubmit={submitOwn} className="border border-ls-ink bg-ls-surface p-5 sm:p-6" noValidate>
+                <p className="font-ls-serif text-3xl">What are you bringing?</p>
+                <p className="mt-1 text-sm text-ls-muted">Type in up to three ingredients. Each one goes straight into the pool for everyone.</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_11rem_auto] sm:items-end">
                   <div>
                     <label htmlFor="own-name" className={`${label} mb-2 block`}>
@@ -274,9 +236,8 @@ export default function Lab() {
                   {ownError ?? (ownAdded ? `✓ Added ${ownAdded} to what you're bringing.` : p.full ? "You've got your three. Remove one to add your own." : "")}
                 </p>
               </form>
-
-              <div className="mt-8">
-                <p className={`${label} mb-3 text-ls-muted`}>Already in the pool</p>
+              <div className="mt-6">
+                <p className={`${label} mb-3 text-ls-muted`}>Already in the pool · don&rsquo;t double up</p>
                 <ul className="flex flex-wrap gap-2">
                   {p.event.pool.map((i) => (
                     <li key={i.id} className="border border-ls-border bg-ls-surface px-3 py-1.5 text-sm">
@@ -284,6 +245,47 @@ export default function Lab() {
                     </li>
                   ))}
                 </ul>
+              </div>
+              <div className="mt-10">
+                <p className="font-ls-serif text-2xl">Stuck? Pick from these ideas</p>
+                <p className="mt-1 mb-4 text-sm text-ls-muted">Ingredients that would round out tonight&rsquo;s pool. Tap one to bring it.</p>
+                <div role="tablist" aria-label="Ingredient category" className="flex gap-5 scroll-row border-b border-ls-border">
+                  {categories.map((c) => (
+                    <button key={c} type="button" role="tab" aria-selected={p.ideaTab === c} onClick={() => p.setIdeaTab(c)} className={`${tab.live} shrink-0`}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                <ul className="divide-y divide-ls-border border-b border-ls-border" role="tabpanel">
+                  {p.event.ideas
+                    .filter((i) => i.category === p.ideaTab)
+                    .map((i) => {
+                      const on = p.bringing.includes(i.id);
+                      return (
+                        <li key={i.id} className="flex items-center justify-between gap-4 py-4">
+                          <div className="min-w-0">
+                            <p className="text-[17px]">{i.name}</p>
+                            <p className="text-sm text-ls-muted">
+                              {i.vegetarian ? "Vegetarian" : "Meat & fish"}
+                              {i.nuts ? " · Contains nuts" : ""}
+                              {i.after ? " · Goes on after the bake" : ""}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            aria-pressed={on}
+                            disabled={!on && p.full}
+                            aria-label={`${on ? "Stop bringing" : "Bring"} ${i.name}`}
+                            onClick={() => p.toggleBring(i.id)}
+                            className={`${secondary.live} min-h-10 shrink-0 px-4`}
+                          >
+                            {on ? "✓ Bringing" : "Bring"}
+                          </button>
+                        </li>
+                      );
+                    })}
+                </ul>
+                {p.full && <p className="mt-3 text-sm text-ls-muted">That&rsquo;s your three. Remove one to swap it out.</p>}
               </div>
             </div>
 

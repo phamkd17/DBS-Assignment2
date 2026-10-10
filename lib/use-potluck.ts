@@ -26,8 +26,9 @@ export function balanceNote(count: Record<Taste, number>) {
   return "Nicely balanced. It's yours, so trust your palate.";
 }
 
-export function usePotluck() {
-  const [bringing, setBringing] = useState<string[]>(["burrata", "arugula"]);
+/** `startEmpty` begins with nothing claimed (the real site); design systems pre-fill a demo state. */
+export function usePotluck({ startEmpty = false }: { startEmpty?: boolean } = {}) {
+  const [bringing, setBringing] = useState<string[]>(startEmpty ? [] : ["burrata", "arugula"]);
   const [confirmed, setConfirmed] = useState(false);
   const [ideaTab, setIdeaTab] = useState<Category>("Cheese");
   const [poolFilter, setPoolFilter] = useState<Category | "All">("All");
