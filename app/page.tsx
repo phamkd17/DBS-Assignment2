@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { moodBoards } from "@/lib/mood-boards";
+import { lineAndStone, moodBoards } from "@/lib/mood-boards";
+import { instrumentSerif } from "@/lib/fonts";
+
+// Add each design system here once it is built.
+const designSystems = [lineAndStone];
 
 export default function Hub() {
   return (
@@ -26,6 +30,32 @@ export default function Hub() {
                       style={{ background: s.hex }}
                     />
                   ))}
+                </span>
+                <span className="text-sm font-medium">{board.name} →</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">
+          2 · Design Systems
+        </h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+          {designSystems.map((board) => (
+            <li key={board.slug}>
+              <Link
+                href={`/design-systems/${board.slug}`}
+                className="flex items-center justify-between gap-3 rounded-xl border border-neutral-300 p-4 transition-colors hover:border-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 active:bg-neutral-100"
+              >
+                <span className="flex items-center gap-2">
+                  <span className={`${instrumentSerif.className} text-3xl leading-none`}>Aa</span>
+                  <span className="flex">
+                    {board.palette.slice(3, 7).map((s) => (
+                      <span key={s.hex} className="h-6 w-3" style={{ background: s.hex }} />
+                    ))}
+                  </span>
                 </span>
                 <span className="text-sm font-medium">{board.name} →</span>
               </Link>

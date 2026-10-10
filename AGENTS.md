@@ -70,6 +70,10 @@ Styles (photos are the owner's own, from `~/Desktop/Mood Board`, resized with EX
 Board data and palettes live in `lib/mood-boards.ts`; each board is 23 photos + 7 generated tiles = 30 artifacts.
 
 ### 3. Design systems (`/design-systems/[style]`)
+Status: **Line & Stone done** (`app/design-systems/line-and-stone/`). Trailhead and Candlelit Table not started.
+Shared pieces: color tokens in `app/globals.css` (`--color-ls-*` → `bg-ls-bg`, `text-ls-ink`, …), fonts in `lib/fonts.ts`, component class strings with live and per-state variants in `components/line-and-stone/styles.ts`, dish data in `lib/dishes.ts`, contrast math in `lib/contrast.ts`. Reuse these for the site; don't duplicate tokens.
+Tailwind v4 gotcha: `outline-none` also cancels `focus-visible:outline-2`. Pair focus rings with `focus-visible:outline-solid`.
+
 Each is a UI library built from its mood board, using **culinary content** (real dish names, not lorem ipsum). Each includes:
 1. **Color roles:** background, surface, text, muted text, border, and accent, **with contrast ratios** shown (text and muted text must be ≥ 4.5:1 on background)
 2. **Type roles:** display, heading, body, and label, with sizes and weights, set in real content (e.g. "12 dishes this season")
