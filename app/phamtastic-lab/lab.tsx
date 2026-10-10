@@ -33,7 +33,7 @@ function Step({ id, n, title, intro, children }: { id: string; n: string; title:
   );
 }
 
-function Arcade({ count = 12, className = "" }: { count?: number; className?: string }) {
+function Arcade({ count = 12, className = "", stroke = "#1C1D1F" }: { count?: number; className?: string; stroke?: string }) {
   const w = 240 / count;
   return (
     <svg viewBox="0 0 240 40" className={`block w-full ${className}`} aria-hidden="true" preserveAspectRatio="none">
@@ -42,7 +42,7 @@ function Arcade({ count = 12, className = "" }: { count?: number; className?: st
           key={i}
           d={`M${i * w + w * 0.15} 40 V22 A${w * 0.35} ${w * 0.35} 0 0 1 ${i * w + w * 0.85} 22 V40`}
           fill="none"
-          stroke="#1C1D1F"
+          stroke={stroke}
           strokeWidth="0.6"
           vectorEffect="non-scaling-stroke"
         />
@@ -133,15 +133,15 @@ export default function Lab() {
           <p className={`${label} text-ls-muted`}>The Phamtastic Culinary Lab</p>
           <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-end">
             <div>
-              <p className="text-base">
+              <p className="text-base text-ls-muted">
                 Next lab · {p.event.date} · {p.event.time}
               </p>
-              <h1 id="hero-title" className="mt-2 font-ls-serif text-7xl leading-[0.9] sm:text-9xl">
+              <h1 id="hero-title" className="mt-2 font-ls-serif text-7xl leading-[0.9] sm:text-8xl">
                 {p.event.theme}
               </h1>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed">
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ls-muted">
                 I make the dough and sauce and show you why it works. You bring three ingredients, then build your own
-                creation from everything on the table. <span className="font-ls-serif text-xl italic">You&rsquo;re the final chef.</span>
+                creation from everything on the table. <span className="font-ls-serif text-xl italic text-ls-ink">You&rsquo;re the final chef.</span>
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#bring" className={primary.live}>
@@ -152,7 +152,7 @@ export default function Lab() {
                 </button>
               </div>
             </div>
-            <dl className="divide-y divide-ls-border border-y border-ls-ink">
+            <dl className="divide-y divide-ls-border border-y border-ls-border">
               {[
                 ["I’ll provide", p.event.base.join(" & ")],
                 ["You bring", `${p.event.perGuest} ingredients each`],
@@ -166,7 +166,7 @@ export default function Lab() {
               ))}
             </dl>
           </div>
-          <Arcade className="mt-14 h-10 sm:h-14" />
+          <Arcade className="mt-14 h-10 sm:h-14" stroke="#A8A196" />
         </section>
 
         <Step id="bring" n="01" title="Bring" intro="Claim three ingredients so we don’t double up. Everything you bring goes into a shared pool that anyone can use.">
@@ -493,8 +493,8 @@ export default function Lab() {
               <article key={night.id} className="grid gap-6 py-8 lg:grid-cols-[18rem_1fr]">
                 <div>
                   <p className={`${label} text-ls-muted`}>{night.date}</p>
-                  <h3 className="mt-1 font-ls-serif text-4xl leading-none">{night.theme}</h3>
-                  <p className="mt-3 border-l border-ls-ink pl-3 text-[15px] leading-relaxed">
+                  <h3 className="mt-1 font-ls-serif text-3xl leading-none text-ls-ink/85">{night.theme}</h3>
+                  <p className="mt-3 border-l border-ls-border pl-3 text-[15px] leading-relaxed text-ls-muted">
                     <span className={`${label} block text-ls-muted`}>What we learned</span>
                     {night.lesson}
                   </p>
@@ -514,10 +514,10 @@ export default function Lab() {
                             width={c.image.w}
                             height={c.image.h}
                             sizes="(min-width: 1024px) 14rem, 45vw"
-                            className="aspect-[4/5] h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] group-active:scale-100"
+                            className="aspect-[4/5] h-auto w-full object-cover opacity-90 saturate-[.7] transition-[transform,filter,opacity] duration-300 group-hover:scale-[1.03] group-hover:opacity-100 group-hover:saturate-100 group-focus-visible:opacity-100 group-focus-visible:saturate-100 group-active:scale-100"
                           />
                         </span>
-                        <span className="mt-2 block font-ls-serif text-xl leading-tight group-hover:underline group-hover:underline-offset-4">
+                        <span className="mt-2 block font-ls-serif text-xl leading-tight text-ls-ink/85 group-hover:text-ls-ink group-hover:underline group-hover:underline-offset-4">
                           {c.name}
                         </span>
                         <span className="block text-sm text-ls-muted">Built by {c.builtBy}</span>
