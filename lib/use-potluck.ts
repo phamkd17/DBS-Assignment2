@@ -8,7 +8,7 @@ import { pizzaNight as event, tastes, type Category, type Ingredient, type Taste
 
 export const howItWorks: [string, string][] = [
   ["I pick a theme.", "Tonight it’s pizza, so I make the dough and tomato sauce."],
-  ["You bring three ingredients.", "Claim them here so we don’t double up."],
+  ["You bring three or more ingredients.", "Claim them here so we don’t double up."],
   ["It all goes in the pool.", "Everyone can use anything anyone brought."],
   ["I show you why it works.", "A few bits of food science, so you know what makes a pizza great."],
   ["You build your creation.", "Mix and match. No two plates come out the same."],
@@ -26,8 +26,12 @@ export function balanceNote(count: Record<Taste, number>) {
   return "Nicely balanced. It's yours, so trust your palate.";
 }
 
-/** `startEmpty` begins with nothing claimed (the real site); design systems pre-fill a demo state. */
-export function usePotluck({ startEmpty = false }: { startEmpty?: boolean } = {}) {
+/**
+ * `startEmpty` begins with nothing claimed (the real site); design systems pre-fill a demo state.
+ * `capped` makes perGuest a hard limit (design systems use it to show the disabled state);
+ * on the site it's only a suggestion and guests can bring more.
+ */
+export function usePotluck({ startEmpty = false, capped = true }: { startEmpty?: boolean; capped?: boolean } = {}) {
   const [bringing, setBringing] = useState<string[]>(startEmpty ? [] : ["burrata", "arugula"]);
   const [confirmed, setConfirmed] = useState(false);
   const [ideaTab, setIdeaTab] = useState<Category>("Cheese");
@@ -42,7 +46,8 @@ export function usePotluck({ startEmpty = false }: { startEmpty?: boolean } = {}
   // The host provides the base, but guests are free to leave any of it off (e.g. a white pizza).
   const [baseOn, setBaseOn] = useState<string[]>(event.base);
 
-  const full = bringing.length >= event.perGuest;
+  const reachedSuggested = bringing.length >= event.perGuest;
+  const full = capped && reachedSuggested;
   const claimable = [...event.ideas, ...custom];
   const mine: Ingredient[] = bringing.map((id) => ({ ...claimable.find((i) => i.id === id)!, broughtBy: "You" }));
   const pool: Ingredient[] = [...event.pool, ...mine];
@@ -60,7 +65,7 @@ export function usePotluck({ startEmpty = false }: { startEmpty?: boolean } = {}
   const toggleBring = (id: string) => {
     setConfirmed(false);
     const wasBringing = bringing.includes(id);
-    setBringing((b) => (b.includes(id) ? b.filter((x) => x !== id) : b.length < event.perGuest ? [...b, id] : b));
+    setBringing((b) => (b.includes(id) ? b.filter((x) => x !== id) : !capped || b.length < event.perGuest ? [...b, id] : b));
     if (wasBringing) {
       setCreation((c) => c.filter((x) => x !== id));
       setCustom((c) => c.filter((x) => x.id !== id));
@@ -93,6 +98,7 @@ export function usePotluck({ startEmpty = false }: { startEmpty?: boolean } = {}
     event,
     bringing,
     full,
+    reachedSuggested,
     mine,
     pool,
     visiblePool,

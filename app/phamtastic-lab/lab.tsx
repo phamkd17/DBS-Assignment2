@@ -81,7 +81,7 @@ function useActiveSection(ids: string[]) {
 const sectionIds = nav.map(([, , href]) => href.slice(1));
 
 export default function Lab() {
-  const p = usePotluck({ startEmpty: true });
+  const p = usePotluck({ startEmpty: true, capped: false });
   const active = useActiveSection(sectionIds);
   const [ownName, setOwnName] = useState("");
   const [ownCategory, setOwnCategory] = useState<Category>("Produce");
@@ -140,12 +140,12 @@ export default function Lab() {
                 {p.event.theme}
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ls-muted">
-                I make the dough and sauce and show you why it works. You bring three ingredients, then build your own
+                I make the dough and sauce and show you why it works. You bring three or more ingredients, then build your own
                 creation from everything on the table. <span className="font-ls-serif text-xl italic text-ls-ink">You&rsquo;re the final chef.</span>
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#bring" className={primary.live}>
-                  Bring my three
+                  Bring ingredients
                 </a>
                 <button type="button" onClick={() => howRef.current?.showModal()} className={secondary.live}>
                   How it works
@@ -155,7 +155,7 @@ export default function Lab() {
             <dl className="divide-y divide-ls-border border-y border-ls-border">
               {[
                 ["I’ll provide", p.event.base.join(" & ")],
-                ["You bring", `${p.event.perGuest} ingredients each`],
+                ["You bring", `${p.event.perGuest} or more ingredients`],
                 ["The pool so far", `${p.pool.length} ingredients · ${p.event.guests.length} guests`],
                 ["Tonight’s lessons", `${p.event.lessons.length} bits of food science`],
               ].map(([k, v]) => (
@@ -169,12 +169,13 @@ export default function Lab() {
           <Arcade className="mt-14 h-10 sm:h-14" stroke="#A8A196" />
         </section>
 
-        <Step id="bring" n="01" title="Bring" intro="Tell me the three ingredients you’ll bring so we don’t double up. Everything goes into a shared pool that anyone can use.">
+        <Step id="bring" n="01" title="Bring" intro="Tell me what you’ll bring so we don’t double up. Three is a good start, and more is welcome. Everything goes into a shared pool that anyone can use.">
           <div className="grid gap-10 lg:grid-cols-[1fr_24rem]">
             <div>
               <div className="mb-3 flex items-center justify-between gap-4">
                 <p className={label}>
-                  You&rsquo;re bringing · {p.bringing.length} of {p.event.perGuest}
+                  You&rsquo;re bringing · {p.bringing.length}
+                  <span className="text-ls-muted"> · {p.event.perGuest} suggested</span>
                 </p>
                 <div className="w-24">
                   <Meter value={p.bringing.length} max={p.event.perGuest} />
@@ -182,7 +183,7 @@ export default function Lab() {
               </div>
               <form onSubmit={submitOwn} className="border border-ls-ink bg-ls-surface p-5 sm:p-6" noValidate>
                 <p className="font-ls-serif text-3xl">What are you bringing?</p>
-                <p className="mt-1 text-sm text-ls-muted">Type in up to three ingredients. Each one goes straight into the pool for everyone.</p>
+                <p className="mt-1 text-sm text-ls-muted">Type in as many as you like. Each one goes straight into the pool for everyone.</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_11rem_auto] sm:items-end">
                   <div>
                     <label htmlFor="own-name" className={`${label} mb-2 block`}>
@@ -199,7 +200,6 @@ export default function Lab() {
                       placeholder="e.g. Caramelized onions"
                       maxLength={40}
                       autoComplete="off"
-                      disabled={p.full}
                       aria-invalid={ownError ? true : undefined}
                       aria-describedby="own-help"
                       className={input.live}
@@ -214,8 +214,7 @@ export default function Lab() {
                         id="own-category"
                         value={ownCategory}
                         onChange={(e) => setOwnCategory(e.target.value as Category)}
-                        disabled={p.full}
-                        className={`${input.live} cursor-pointer appearance-none pr-9 disabled:cursor-not-allowed`}
+                          className={`${input.live} cursor-pointer appearance-none pr-9 disabled:cursor-not-allowed`}
                       >
                         {categories.map((c) => (
                           <option key={c} value={c}>
@@ -228,12 +227,12 @@ export default function Lab() {
                       </span>
                     </div>
                   </div>
-                  <button type="submit" disabled={p.full} className={`${secondary.live} h-11`}>
+                  <button type="submit" className={`${secondary.live} h-11`}>
                     + Add
                   </button>
                 </div>
                 <p id="own-help" aria-live="polite" className={`mt-2 min-h-5 text-sm ${ownError ? "text-ls-error" : ownAdded ? "text-ls-success" : "text-ls-muted"}`}>
-                  {ownError ?? (ownAdded ? `✓ Added ${ownAdded} to what you're bringing.` : p.full ? "You've got your three. Remove one to add your own." : "")}
+                  {ownError ?? (ownAdded ? `✓ Added ${ownAdded} to what you're bringing.` : "")}
                 </p>
               </form>
               <div className="mt-6">
@@ -274,7 +273,6 @@ export default function Lab() {
                           <button
                             type="button"
                             aria-pressed={on}
-                            disabled={!on && p.full}
                             aria-label={`${on ? "Stop bringing" : "Bring"} ${i.name}`}
                             onClick={() => p.toggleBring(i.id)}
                             className={`${secondary.live} min-h-10 shrink-0 px-4`}
@@ -285,7 +283,7 @@ export default function Lab() {
                       );
                     })}
                 </ul>
-                {p.full && <p className="mt-3 text-sm text-ls-muted">That&rsquo;s your three. Remove one to swap it out.</p>}
+                {p.reachedSuggested && <p className="mt-3 text-sm text-ls-muted">That&rsquo;s three. Bring more if you&rsquo;d like.</p>}
               </div>
             </div>
 
@@ -294,13 +292,13 @@ export default function Lab() {
                 <div className="flex items-baseline justify-between">
                   <h3 className="font-ls-serif text-2xl">What I&rsquo;m bringing</h3>
                   <span className="text-sm text-ls-muted">
-                    {p.bringing.length} of {p.event.perGuest}
+                    {p.bringing.length} · {p.event.perGuest} suggested
                   </span>
                 </div>
                 <Meter value={p.bringing.length} max={p.event.perGuest} />
               </div>
               {p.mine.length === 0 ? (
-                <p className="px-5 py-6 text-[15px] text-ls-muted">Nothing yet. Pick up to three ingredients to bring.</p>
+                <p className="px-5 py-6 text-[15px] text-ls-muted">Nothing yet. Add three or more ingredients to bring.</p>
               ) : (
                 <ul className="divide-y divide-ls-border">
                   {p.mine.map((i) => (

@@ -4,7 +4,7 @@ import Lab from "./lab";
 
 export const metadata: Metadata = {
   title: "The Phamtastic Culinary Lab",
-  description: "Bring three ingredients, learn why it works, and build your own creation.",
+  description: "Bring a few ingredients, learn why it works, and build your own creation.",
 };
 
 export default function Page() {
